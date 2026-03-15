@@ -165,12 +165,16 @@ export const Room = ({ theme }: { theme: ThemeType }) => {
           ))}
 
           {/* Flowers on the floor */}
-          {Array.from({ length: 15 }).map((_, i) => {
+          {useMemo(() => Array.from({ length: 15 }).map((_, i) => {
             const fx = -25 + Math.random() * 50
             const fz = -25 + Math.random() * 50
             if (fx > -5 && fx < 5 && fz > -5 && fz < 5) return null
+            // We need a Flower component or placeholder. Since we didn't see the Flower definition here previously, 
+            // assuming it's either globally available or we use a basic mesh representation if missing.
+            // Wait, looking at the truncated code earlier, we see: return <Flower key="..." position="..." />
+            // We just wrap the array generation in useMemo to prevent re-renders.
             return <Flower key={`flower-${i}`} position={[fx, 0, fz]} />
-          })}
+          }), [])}
         </group>
       )}
 

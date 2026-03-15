@@ -18,7 +18,9 @@ export const MY_PLAYER_STATE = {
 export const Player = () => {
   const [, getKeys] = useKeyboardControls()
   const playerRef = useRef<THREE.Group>(null)
-  const { studentInfo, cameraView } = useStore()
+  
+  const studentInfo = useStore(s => s.studentInfo)
+  const cameraView = useStore(s => s.cameraView)
   
   const pointerDelta = useRef({ x: 0, y: 0 })
   const isPointerDown = useRef(false)

@@ -27,8 +27,14 @@ const themeSettings: Record<ThemeType, { bg: string; fog: string; light: string;
 }
 
 export const Gallery = () => {
-  const { setView, currentTheme, studentInfo, cameraView, setCameraView, setJoystickState } = useStore()
-  const { profile } = useAuthStore()
+  const setView = useStore(s => s.setView)
+  const currentTheme = useStore(s => s.currentTheme)
+  const studentInfo = useStore(s => s.studentInfo)
+  const cameraView = useStore(s => s.cameraView)
+  const setCameraView = useStore(s => s.setCameraView)
+  const setJoystickState = useStore(s => s.setJoystickState)
+
+  const profile = useAuthStore(s => s.profile)
   const [showJoystick, setShowJoystick] = useState(false)
   
   const theme = themeSettings[currentTheme]
