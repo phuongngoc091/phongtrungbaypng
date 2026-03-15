@@ -65,6 +65,9 @@ export const Multiplayer = ({ galleryId }: { galleryId: string }) => {
 
     // Push my current explicit player state to RTDB
     const meRef = ref(rtdb, `rooms/${galleryId}/players/${myId}`)
+    
+    // Use update to only patch my specific properties without overwriting if not needed, 
+    // or set if we just want to ensure it's there. 
     set(meRef, {
       x: MY_PLAYER_STATE.x,
       y: MY_PLAYER_STATE.y,
@@ -72,7 +75,8 @@ export const Multiplayer = ({ galleryId }: { galleryId: string }) => {
       ry: MY_PLAYER_STATE.ry,
       nickname: studentInfo?.nickname || profile?.displayName || 'Khách',
       characterType: studentInfo?.characterType || 'robot',
-      color: studentInfo ? (studentInfo.characterType === 'girl' ? '#ec4899' : studentInfo.characterType === 'boy' ? '#3b82f6' : '#a855f7') : '#f59e0b'
+      color: studentInfo ? (studentInfo.characterType === 'girl' ? '#ec4899' : studentInfo.characterType === 'boy' ? '#3b82f6' : '#a855f7') : '#f59e0b',
+      lastActive: now
     })
   })
 

@@ -81,7 +81,7 @@ export const AdminDashboard = () => {
       <div className="max-w-6xl mx-auto space-y-8">
         
         {/* Header */}
-        <div className="flex items-center justify-between mb-10 bg-slate-800/50 p-6 rounded-2xl border border-slate-700">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 mb-10 bg-slate-800/50 p-6 rounded-2xl border border-slate-700">
           <div className="flex items-center gap-4">
             <button 
               onClick={() => setView('teacher')}
@@ -99,7 +99,7 @@ export const AdminDashboard = () => {
           
           <button 
             onClick={handleResetPassword}
-            className="flex items-center gap-2 bg-red-500/20 text-red-400 hover:bg-red-500/30 border border-red-500/50 px-5 py-3 rounded-xl transition-colors font-medium"
+            className="w-full md:w-auto flex items-center justify-center gap-2 bg-red-500/20 text-red-400 hover:bg-red-500/30 border border-red-500/50 px-5 py-3 rounded-xl transition-colors font-medium"
           >
             <KeyRound className="w-5 h-5" /> Đặt lại mật khẩu tất cả
           </button>

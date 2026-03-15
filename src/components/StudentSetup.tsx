@@ -79,8 +79,11 @@ export const StudentSetup = () => {
       
       <div className="w-full max-w-2xl bg-slate-800/80 backdrop-blur-xl rounded-3xl border border-slate-700 p-8 md:p-12 shadow-2xl z-10 relative">
         <button 
-          onClick={() => setView('home')}
-          className="absolute top-8 left-8 p-3 bg-slate-700/50 rounded-full hover:bg-slate-600 transition-colors"
+          onClick={(e) => {
+            e.preventDefault()
+            setView('home')
+          }}
+          className="absolute top-8 left-8 p-3 bg-slate-700/50 rounded-full hover:bg-slate-600 transition-colors z-50 cursor-pointer"
         >
           <ArrowLeft className="w-6 h-6" />
         </button>

@@ -462,7 +462,7 @@ export const TeacherView = () => {
 
             {/* Right Column: Image Uploads */}
             <div className="lg:col-span-2">
-              <div className="bg-slate-800/50 backdrop-blur-md p-6 rounded-2xl border border-slate-700 h-full min-h-[500px] flex flex-col relative pb-32">
+              <div className="bg-slate-800/50 backdrop-blur-md p-6 rounded-2xl border border-slate-700 h-full min-h-[500px] flex flex-col relative pb-56 sm:pb-32">
                 <div className="flex justify-between items-center mb-6">
                   <h2 className="text-xl font-semibold flex items-center gap-2">
                     <ImageIcon className="w-6 h-6 text-pink-400" /> Các Bức Tranh
@@ -528,7 +528,7 @@ export const TeacherView = () => {
                 {/* Sticky Action Footer inside the right column */}
                 <div className="absolute bottom-0 left-0 w-full p-6 bg-slate-800/90 backdrop-blur-xl border-t border-slate-700 rounded-b-2xl shadow-[0_-10px_40px_rgba(0,0,0,0.3)] z-20">
                     {publishError && <div className="mb-4 p-3 bg-red-500/20 border border-red-500 rounded-lg text-red-200 text-sm text-center">{publishError}</div>}
-                    <div className="flex gap-4 max-w-2xl mx-auto items-end relative">
+                    <div className="flex flex-col sm:flex-row gap-4 max-w-2xl mx-auto items-stretch sm:items-end relative">
                       
                       {/* Theme Dropdown */}
                       <div className="relative flex-1">

@@ -10,7 +10,8 @@ const firebaseConfig = {
   projectId: "app-trung-bay",
   storageBucket: "app-trung-bay.firebasestorage.app",
   messagingSenderId: "219676420875",
-  appId: "1:219676420875:web:9b98654bee083faa04100e"
+  appId: "1:219676420875:web:9b98654bee083faa04100e",
+  databaseURL: "https://app-trung-bay-default-rtdb.asia-southeast1.firebasedatabase.app"
 };
 
 // Initialize Firebase
