@@ -19,7 +19,6 @@ export const StudentSetup = () => {
 
   const [autoJoin, setAutoJoin] = useState(false)
 
-  // Pre-fill from URL like ?code=XYZ
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
     const code = params.get('code')
@@ -29,6 +28,11 @@ export const StudentSetup = () => {
     }
     if (auto === 'true') {
       setAutoJoin(true)
+    }
+    
+    // Clear the URL so if the user clicks "Home" they don't get trapped by App.tsx redirect
+    if (code || auto) {
+      window.history.replaceState({}, '', window.location.pathname)
     }
   }, [])
 
