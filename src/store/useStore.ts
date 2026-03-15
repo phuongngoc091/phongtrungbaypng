@@ -16,8 +16,10 @@ export interface AppState {
   galleryBannerText: string
   galleryBannerImage: string | null
   cameraView: '1st' | '3rd'
+  joystickState: { forward: boolean; backward: boolean; left: boolean; right: boolean }
   
   setView: (view: AppState['view']) => void
+  setJoystickState: (state: Partial<{ forward: boolean; backward: boolean; left: boolean; right: boolean }>) => void
   setProjectName: (name: string) => void
   addUploadedImage: (imageUrl: string) => void
   setCurrentTheme: (theme: ThemeType) => void
@@ -37,8 +39,10 @@ export const useStore = create<AppState>((set) => ({
   galleryBannerText: 'phuongngoc091',
   galleryBannerImage: null,
   cameraView: '3rd',
+  joystickState: { forward: false, backward: false, left: false, right: false },
   
   setView: (view) => set({ view }),
+  setJoystickState: (state) => set((prev) => ({ joystickState: { ...prev.joystickState, ...state } })),
   setProjectName: (name) => set({ projectName: name }),
   addUploadedImage: (imageUrl) => set((state) => ({ 
     uploadedImages: [...state.uploadedImages, imageUrl] 

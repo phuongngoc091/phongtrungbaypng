@@ -58,18 +58,24 @@ export const Player = () => {
     
     // If not in gallery (e.g. paused), we could disable this
     const { forward, backward, left, right } = getKeys()
+    const { joystickState } = useStore.getState()
     
-    const isMoving = forward || backward || left || right
+    const f = forward || joystickState.forward
+    const b = backward || joystickState.backward
+    const l = left || joystickState.left
+    const r = right || joystickState.right
+    
+    const isMoving = f || b || l || r
     
     // Tank controls setup
-    if (left) playerRef.current.rotation.y += ROTATION_SPEED * delta
-    if (right) playerRef.current.rotation.y -= ROTATION_SPEED * delta
+    if (l) playerRef.current.rotation.y += ROTATION_SPEED * delta
+    if (r) playerRef.current.rotation.y -= ROTATION_SPEED * delta
     
-    const direction = new THREE.Vector3(0, 0, (Number(backward) - Number(forward)))
+    const direction = new THREE.Vector3(0, 0, (Number(b) - Number(f)))
     direction.applyQuaternion(playerRef.current.quaternion)
     direction.normalize().multiplyScalar(MOVE_SPEED * delta)
     
-    if (forward || backward) {
+    if (f || b) {
       playerRef.current.position.add(direction)
     }
 

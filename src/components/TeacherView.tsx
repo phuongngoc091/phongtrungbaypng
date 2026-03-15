@@ -3,7 +3,8 @@ import type { ChangeEvent } from 'react'
 import { useStore } from '../store/useStore'
 import type { ThemeType } from '../store/useStore'
 import { useAuthStore } from '../store/useAuthStore'
-import { ArrowLeft, Upload, Image as ImageIcon, CheckCircle, ShieldUser, LogOut, ChevronDown, ChevronRight, Trash2, Star } from 'lucide-react'
+import { ArrowLeft, Upload, Image as ImageIcon, CheckCircle, ShieldUser, LogOut, ChevronDown, ChevronRight, Trash2, Star, Edit } from 'lucide-react'
+import Swal from 'sweetalert2'
 import { db } from '../utils/firebase'
 import { collection, getDocs, query, where, setDoc, doc, deleteDoc, writeBatch } from 'firebase/firestore'
 import { ShareModal } from './ShareModal'
@@ -76,24 +77,41 @@ export const TeacherView = () => {
     if (proj.images) {
       proj.images.forEach((img: string) => addUploadedImage(img))
     }
-    alert(`Đã tải dự án: ${proj.projectName}`)
+    Swal.fire({ title: 'Thành công', text: `Đã tải dự án: ${proj.projectName}`, icon: 'success', toast: true, position: 'top-end', timer: 3000, showConfirmButton: false })
+  }
+
+  const handleEditProject = async (proj: any, e: React.MouseEvent) => {
+    e.stopPropagation()
+    const result = await Swal.fire({
+      title: 'Sửa dự án',
+      text: "Bạn có muốn tải dự án này để chỉnh sửa?",
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Đồng ý',
+      cancelButtonText: 'Huỷ'
+    })
+    if (result.isConfirmed) {
+      loadProjectInfo(proj)
+    }
   }
 
   const handleDeleteProject = async (id: string, e: React.MouseEvent) => {
     e.stopPropagation()
-    if (!window.confirm("Bạn có chắc chắn muốn xoá dự án này không?")) return
+    const result = await Swal.fire({ title: 'Xác nhận', text: "Bạn có chắc chắn muốn xoá dự án này không?", icon: 'warning', showCancelButton: true, confirmButtonText: 'Xoá', confirmButtonColor: '#d33', cancelButtonText: 'Huỷ' })
+    if (!result.isConfirmed) return
     try {
       await deleteDoc(doc(db, 'galleries', id))
       fetchSavedProjects()
     } catch (err) {
       console.error(err)
-      alert('Lỗi khi xoá dự án')
+      Swal.fire('Lỗi', 'Lỗi khi xoá dự án', 'error')
     }
   }
 
   const handleSetAsDemo = async (id: string, e: React.MouseEvent) => {
     e.stopPropagation()
-    if (!window.confirm("Đặt dự án này làm Demo để hiển thị ngoài trang chủ?")) return
+    const result = await Swal.fire({ title: 'Xác nhận', text: "Đặt dự án này làm Demo để hiển thị ngoài trang chủ?", icon: 'question', showCancelButton: true, confirmButtonText: 'Đồng ý', cancelButtonText: 'Huỷ' })
+    if (!result.isConfirmed) return
     try {
       // First un-demo all existing ones
       const q = query(collection(db, 'galleries'), where('isAdmin', '==', true))
@@ -106,10 +124,10 @@ export const TeacherView = () => {
       batch.update(doc(db, 'galleries', id), { isAdmin: true })
       await batch.commit()
       fetchSavedProjects()
-      alert("Đã đặt làm Demo thành công!")
+      Swal.fire({ title: 'Thành công', text: 'Đã đặt làm Demo thành công!', icon: 'success', toast: true, position: 'top-end', timer: 3000, showConfirmButton: false })
     } catch (err) {
       console.error(err)
-      alert("Lỗi khi đặt làm Demo")
+      Swal.fire('Lỗi', 'Lỗi khi đặt làm Demo', 'error')
     }
   }
 
@@ -119,7 +137,7 @@ export const TeacherView = () => {
 
     const remainingSlots = maxImages - uploadedImages.length
     if (remainingSlots <= 0) {
-      alert(`Bạn chỉ được tải tối đa ${maxImages} ảnh.`)
+      Swal.fire('Lỗi', `Bạn chỉ được tải tối đa ${maxImages} ảnh.`, 'error')
       return
     }
 
@@ -171,7 +189,7 @@ export const TeacherView = () => {
     if (!file || !file.type.startsWith('image/')) return;
     
     if (!isVip) {
-      alert('Chức năng tải lên Banner tuỳ chỉnh chỉ dành cho tài khoản VIP.');
+      Swal.fire('Lỗi', 'Chức năng tải lên Banner tuỳ chỉnh chỉ dành cho tài khoản VIP.', 'warning')
       return;
     }
 
@@ -222,7 +240,7 @@ export const TeacherView = () => {
 
   const handleSaveDraft = async () => {
     if (!projectName.trim()) {
-      alert("Vui lòng đặt Tên Dự Án để lưu lại nhé!")
+      Swal.fire('Thông báo', "Vui lòng đặt Tên Dự Án để lưu lại nhé!", 'warning')
       return
     }
     setPublishing(true)
@@ -242,11 +260,11 @@ export const TeacherView = () => {
         createdAt: Date.now()
       }
       await setDoc(doc(db, 'galleries', code), galleryData)
-      alert(`Đã lưu Dự án "${projectName}" thành công!`)
+      Swal.fire({ title: 'Thành công', text: `Đã lưu Dự án "${projectName}" thành công!`, icon: 'success', toast: true, position: 'top-end', timer: 3000, showConfirmButton: false })
       fetchSavedProjects() // Refresh list
     } catch (err) {
       console.error(err)
-      alert('Lỗi khi lưu dự án')
+      Swal.fire('Lỗi', 'Lỗi khi lưu dự án', 'error')
     } finally {
       setPublishing(false)
     }
@@ -254,7 +272,7 @@ export const TeacherView = () => {
 
   const handlePublish = async () => {
     if (uploadedImages.length === 0) {
-      alert('Vui lòng tải lên ít nhất 1 bức tranh!')
+      Swal.fire('Thông báo', 'Vui lòng tải lên ít nhất 1 bức tranh!', 'warning')
       return
     }
 
@@ -409,7 +427,7 @@ export const TeacherView = () => {
                       <p className="text-slate-500 text-sm text-center py-4">Chưa có dự án nào được lưu.</p>
                     ) : (
                       savedProjects.map(proj => (
-                        <div key={proj.id} className="bg-slate-900 border border-slate-700 p-3 rounded-xl flex items-center justify-between group hover:border-green-500/50 transition-colors cursor-pointer" onClick={() => loadProjectInfo(proj)}>
+                        <div key={proj.id} className="bg-slate-900 border border-slate-700 p-3 rounded-xl flex items-center justify-between group hover:border-green-500/50 transition-colors">
                           <div className="overflow-hidden pr-2 flex-1">
                             <p className="font-medium text-slate-200 truncate flex items-center gap-2">
                               {proj.projectName || 'Dự án (Không tên)'} 
@@ -420,7 +438,10 @@ export const TeacherView = () => {
                                • {new Date(proj.createdAt).toLocaleDateString('vi-VN')}
                             </p>
                           </div>
-                          <div className="flex gap-1 md:opacity-0 group-hover:opacity-100 transition-opacity items-center">
+                          <div className="flex gap-1 items-center z-10">
+                            <button onClick={(e) => handleEditProject(proj, e)} className="p-2 text-blue-400 hover:bg-blue-400/20 rounded-lg transition-colors" title="Sửa">
+                              <Edit className="w-4 h-4" />
+                            </button>
                             {profile.role === 'admin' && !proj.isAdmin && (
                               <button onClick={(e) => handleSetAsDemo(proj.id, e)} className="p-2 text-yellow-400 hover:bg-yellow-400/20 rounded-lg transition-colors" title="Đặt làm Demo">
                                 <Star className="w-4 h-4" />

@@ -4,7 +4,7 @@ import { KeyboardControls } from '@react-three/drei'
 import { useStore } from '../store/useStore'
 import type { ThemeType } from '../store/useStore'
 import { useAuthStore } from '../store/useAuthStore'
-import { ArrowLeft, Eye, User } from 'lucide-react'
+import { ArrowLeft, Eye, User, ArrowUp, ArrowDown, CornerUpLeft, CornerUpRight } from 'lucide-react'
 import { Player } from './Player'
 import { Room } from './Room'
 import { ArtFrames } from './ArtFrames'
@@ -27,7 +27,7 @@ const themeSettings: Record<ThemeType, { bg: string; fog: string; light: string;
 }
 
 export const Gallery = () => {
-  const { setView, currentTheme, studentInfo, cameraView, setCameraView } = useStore()
+  const { setView, currentTheme, studentInfo, cameraView, setCameraView, setJoystickState } = useStore()
   const { profile } = useAuthStore()
   
   const theme = themeSettings[currentTheme]
@@ -104,6 +104,44 @@ export const Gallery = () => {
           <Player />
         </Canvas>
       </KeyboardControls>
+
+      {/* Mobile Controls (D-Pad) */}
+      <div className="absolute bottom-6 right-6 z-20 md:hidden flex flex-col items-center gap-2 opacity-70">
+        <button
+          className="w-14 h-14 bg-white/20 backdrop-blur-md rounded-full shadow-lg border border-white/30 flex justify-center items-center active:bg-white/40"
+          onPointerDown={() => setJoystickState({ forward: true })}
+          onPointerUp={() => setJoystickState({ forward: false })}
+          onPointerLeave={() => setJoystickState({ forward: false })}
+        >
+           <ArrowUp className="w-8 h-8 text-white" />
+        </button>
+        <div className="flex gap-14">
+          <button
+            className="w-14 h-14 bg-white/20 backdrop-blur-md rounded-full shadow-lg border border-white/30 flex justify-center items-center active:bg-white/40"
+            onPointerDown={() => setJoystickState({ left: true })}
+            onPointerUp={() => setJoystickState({ left: false })}
+            onPointerLeave={() => setJoystickState({ left: false })}
+          >
+             <CornerUpLeft className="w-8 h-8 text-white" />
+          </button>
+          <button
+            className="w-14 h-14 bg-white/20 backdrop-blur-md rounded-full shadow-lg border border-white/30 flex justify-center items-center active:bg-white/40"
+            onPointerDown={() => setJoystickState({ right: true })}
+            onPointerUp={() => setJoystickState({ right: false })}
+            onPointerLeave={() => setJoystickState({ right: false })}
+          >
+             <CornerUpRight className="w-8 h-8 text-white" />
+          </button>
+        </div>
+        <button
+          className="w-14 h-14 bg-white/20 backdrop-blur-md rounded-full shadow-lg border border-white/30 flex justify-center items-center active:bg-white/40"
+          onPointerDown={() => setJoystickState({ backward: true })}
+          onPointerUp={() => setJoystickState({ backward: false })}
+          onPointerLeave={() => setJoystickState({ backward: false })}
+        >
+           <ArrowDown className="w-8 h-8 text-white" />
+        </button>
+      </div>
     </div>
   )
 }

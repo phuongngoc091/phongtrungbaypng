@@ -5,6 +5,7 @@ import { doc, setDoc, collection, getDocs } from 'firebase/firestore'
 import { useStore } from '../store/useStore'
 import type { UserRole } from '../store/useAuthStore'
 import { ArrowLeft } from 'lucide-react'
+import Swal from 'sweetalert2'
 
 export const AuthView = () => {
   const { setView } = useStore()
@@ -62,7 +63,7 @@ export const AuthView = () => {
           createdAt: Date.now()
         })
         
-        alert('Đăng ký thành công!')
+        Swal.fire({ title: 'Thành công', text: 'Đăng ký thành công!', icon: 'success', toast: true, position: 'top-end', timer: 3000, showConfirmButton: false })
         setIsLogin(true) // Switch to login screen after register or just proceed to teacher view
         // setView('teacher')
       }

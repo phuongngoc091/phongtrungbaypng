@@ -5,6 +5,7 @@ import { useAuthStore } from '../store/useAuthStore'
 import type { UserProfile } from '../store/useAuthStore'
 import { useStore } from '../store/useStore'
 import { ArrowLeft, ShieldCheck, KeyRound, Star, User } from 'lucide-react'
+import Swal from 'sweetalert2'
 
 export const AdminDashboard = () => {
   const { profile } = useAuthStore()
@@ -45,10 +46,10 @@ export const AdminDashboard = () => {
       })
       // Optimistic update
       setUsers(users.map(u => u.uid === uid ? { ...u, role: 'vip' } : u))
-      alert('Đã cập nhật tài khoản thành VIP!')
+      Swal.fire({ title: 'Thành công', text: 'Đã cập nhật tài khoản thành VIP!', icon: 'success', toast: true, position: 'top-end', timer: 3000, showConfirmButton: false })
     } catch (error) {
       console.error(error)
-      alert('Lỗi cập nhật.')
+      Swal.fire('Lỗi', 'Lỗi cập nhật.', 'error')
     }
   }
 
@@ -58,7 +59,7 @@ export const AdminDashboard = () => {
         role: 'normal'
       })
       setUsers(users.map(u => u.uid === uid ? { ...u, role: 'normal' } : u))
-      alert('Đã thu hồi VIP.')
+      Swal.fire({ title: 'Thành công', text: 'Đã thu hồi VIP.', icon: 'success', toast: true, position: 'top-end', timer: 3000, showConfirmButton: false })
     } catch (error) {
       console.error(error)
     }
@@ -67,7 +68,7 @@ export const AdminDashboard = () => {
   const handleResetPassword = () => {
     // In a real app, you would probably trigger a Cloud Function
     // because Firebase Client SDK cannot arbitrarily reset passwords without email verification flows or Admin SDK.
-    alert('Tính năng Reset Mật Khẩu Hàng Loạt cần cấu hình Firebase Admin SDK (Cloud Functions) để gửi email khôi phục. Hiện tại chỉ là giao diện Demo.')
+    Swal.fire('Thông báo', 'Tính năng Reset Mật Khẩu Hàng Loạt cần cấu hình Firebase Admin SDK (Cloud Functions) để gửi email khôi phục. Hiện tại chỉ là giao diện Demo.', 'info')
   }
 
   if (loading) return <div className="text-white text-center mt-20">Đang tải dữ liệu...</div>
