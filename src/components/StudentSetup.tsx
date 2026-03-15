@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useStore } from '../store/useStore'
-import { ArrowLeft, User, Play, Hash } from 'lucide-react'
+import { Home, User, Play, Hash } from 'lucide-react'
 import { db } from '../utils/firebase'
 import { doc, getDoc } from 'firebase/firestore'
 
@@ -85,7 +85,7 @@ export const StudentSetup = () => {
           }}
           className="absolute top-8 left-8 p-3 bg-slate-700/50 rounded-full hover:bg-slate-600 transition-colors z-50 cursor-pointer"
         >
-          <ArrowLeft className="w-6 h-6" />
+          <Home className="w-6 h-6" />
         </button>
 
         <div className="text-center mb-10 mt-6 md:mt-2">

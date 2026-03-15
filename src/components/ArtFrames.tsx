@@ -4,7 +4,10 @@ import * as THREE from 'three'
 import { Suspense } from 'react'
 
 export const ArtFrames = () => {
-  const { uploadedImages, currentTheme, galleryBannerText, galleryBannerImage } = useStore()
+  const uploadedImages = useStore(s => s.uploadedImages)
+  const currentTheme = useStore(s => s.currentTheme)
+  const galleryBannerText = useStore(s => s.galleryBannerText)
+  const galleryBannerImage = useStore(s => s.galleryBannerImage)
   
   if (uploadedImages.length === 0) return null
 
