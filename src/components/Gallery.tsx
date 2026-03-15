@@ -109,52 +109,53 @@ export const Gallery = () => {
       {/* Joystick Toggle Button */}
       <button 
         onClick={() => setShowJoystick(!showJoystick)}
-        className={`absolute bottom-6 right-6 z-30 p-4 rounded-full shadow-2xl backdrop-blur-md border transition-all ${
+        className={`fixed bottom-[20px] right-[20px] z-[999] px-5 py-4 rounded-full shadow-2xl backdrop-blur-md border border-white/40 transition-all flex xl:hidden items-center gap-2 ${
           showJoystick 
-            ? 'bg-pink-500/80 border-pink-400 text-white' 
-            : 'bg-black/40 border-white/20 text-white/70 hover:bg-black/60 hover:text-white'
+            ? 'bg-pink-500 text-white border-pink-400' 
+            : 'bg-black/60 text-white/90 hover:bg-black/80 hover:scale-105'
         }`}
-        title="Bật/Tắt phím di chuyển"
+        title="Bật/Tắt phím di chuyển cảm ứng"
       >
-        <Gamepad2 className="w-8 h-8" />
+        <Gamepad2 className="w-7 h-7" />
+        <span className="font-bold text-sm hidden md:inline">{showJoystick ? 'Tắt Điều Khiển' : 'Bật Điều Khiển'}</span>
       </button>
 
       {/* Mobile Controls (D-Pad) */}
       {showJoystick && (
-        <div className="absolute bottom-24 right-6 z-20 flex flex-col items-center gap-2 opacity-80 animate-in slide-in-from-bottom-5">
+        <div className="fixed bottom-[100px] right-[40px] z-[999] flex flex-col items-center gap-2 animate-in slide-in-from-bottom-5">
           <button
-            className="w-14 h-14 bg-white/20 backdrop-blur-md rounded-full shadow-lg border border-white/30 flex justify-center items-center active:bg-white/40"
-            onPointerDown={() => setJoystickState({ forward: true })}
-            onPointerUp={() => setJoystickState({ forward: false })}
-            onPointerLeave={() => setJoystickState({ forward: false })}
+            className="w-16 h-16 bg-black/40 backdrop-blur-md rounded-full shadow-lg border-2 border-white/50 flex justify-center items-center active:bg-white/40 touch-none select-none"
+            onPointerDown={(e) => { e.preventDefault(); setJoystickState({ forward: true }) }}
+            onPointerUp={(e) => { e.preventDefault(); setJoystickState({ forward: false }) }}
+            onPointerLeave={(e) => { e.preventDefault(); setJoystickState({ forward: false }) }}
           >
-             <ArrowUp className="w-8 h-8 text-white" />
+             <ArrowUp className="w-10 h-10 text-white" />
           </button>
-          <div className="flex gap-14">
+          <div className="flex gap-16">
             <button
-              className="w-14 h-14 bg-white/20 backdrop-blur-md rounded-full shadow-lg border border-white/30 flex justify-center items-center active:bg-white/40"
-              onPointerDown={() => setJoystickState({ left: true })}
-              onPointerUp={() => setJoystickState({ left: false })}
-              onPointerLeave={() => setJoystickState({ left: false })}
+              className="w-16 h-16 bg-black/40 backdrop-blur-md rounded-full shadow-lg border-2 border-white/50 flex justify-center items-center active:bg-white/40 touch-none select-none"
+              onPointerDown={(e) => { e.preventDefault(); setJoystickState({ left: true }) }}
+              onPointerUp={(e) => { e.preventDefault(); setJoystickState({ left: false }) }}
+              onPointerLeave={(e) => { e.preventDefault(); setJoystickState({ left: false }) }}
             >
-               <CornerUpLeft className="w-8 h-8 text-white" />
+               <CornerUpLeft className="w-10 h-10 text-white" />
             </button>
             <button
-              className="w-14 h-14 bg-white/20 backdrop-blur-md rounded-full shadow-lg border border-white/30 flex justify-center items-center active:bg-white/40"
-              onPointerDown={() => setJoystickState({ right: true })}
-              onPointerUp={() => setJoystickState({ right: false })}
-              onPointerLeave={() => setJoystickState({ right: false })}
+              className="w-16 h-16 bg-black/40 backdrop-blur-md rounded-full shadow-lg border-2 border-white/50 flex justify-center items-center active:bg-white/40 touch-none select-none"
+              onPointerDown={(e) => { e.preventDefault(); setJoystickState({ right: true }) }}
+              onPointerUp={(e) => { e.preventDefault(); setJoystickState({ right: false }) }}
+              onPointerLeave={(e) => { e.preventDefault(); setJoystickState({ right: false }) }}
             >
-               <CornerUpRight className="w-8 h-8 text-white" />
+               <CornerUpRight className="w-10 h-10 text-white" />
             </button>
           </div>
           <button
-            className="w-14 h-14 bg-white/20 backdrop-blur-md rounded-full shadow-lg border border-white/30 flex justify-center items-center active:bg-white/40"
-            onPointerDown={() => setJoystickState({ backward: true })}
-            onPointerUp={() => setJoystickState({ backward: false })}
-            onPointerLeave={() => setJoystickState({ backward: false })}
+            className="w-16 h-16 bg-black/40 backdrop-blur-md rounded-full shadow-lg border-2 border-white/50 flex justify-center items-center active:bg-white/40 touch-none select-none"
+            onPointerDown={(e) => { e.preventDefault(); setJoystickState({ backward: true }) }}
+            onPointerUp={(e) => { e.preventDefault(); setJoystickState({ backward: false }) }}
+            onPointerLeave={(e) => { e.preventDefault(); setJoystickState({ backward: false }) }}
           >
-             <ArrowDown className="w-8 h-8 text-white" />
+             <ArrowDown className="w-10 h-10 text-white" />
           </button>
         </div>
       )}

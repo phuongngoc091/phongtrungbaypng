@@ -40,16 +40,15 @@ export const Home = () => {
 
       <div className="max-w-5xl w-full z-10 flex flex-col items-center">
         {/* Intro Section */}
-        <div className="text-center mb-16 animate-fade-in-up">
-          <div className="inline-block px-4 py-1.5 rounded-full border border-purple-500/30 bg-purple-500/10 text-purple-300 text-sm font-semibold mb-6 tracking-wide backdrop-blur-sm">
-            Nền tảng triễn lãm tranh nghệ thuật 3D dành cho trường học
+        <div className="text-center mb-10 animate-fade-in-up mt-8 lg:mt-0">
+          <div className="inline-block px-4 py-1.5 rounded-full border border-purple-500/30 bg-purple-500/10 text-purple-300 text-sm font-semibold mb-4 tracking-wide backdrop-blur-sm">
+            Triển lãm tranh 3D trường học
           </div>
-          <h1 className="text-5xl md:text-7xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-400 to-amber-400 mb-6 drop-shadow-[0_0_25px_rgba(236,72,153,0.3)]">
+          <h1 className="text-4xl md:text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-400 to-amber-400 mb-4 drop-shadow-[0_0_25px_rgba(236,72,153,0.3)]">
             Phòng Trưng Bày 3D
           </h1>
-          <p className="text-lg md:text-xl text-slate-300 max-w-2xl mx-auto leading-relaxed">
-            Nơi trưng bày các tác phẩm nghệ thuật kỹ thuật số một cách sống động. 
-            Khám phá không gian tương tác đa chiều, hỗ trợ nhiều chủ đề ấn tượng giúp nuôi dưỡng tâm hồn nghệ thuật của học sinh.
+          <p className="text-base md:text-lg text-slate-300 max-w-xl mx-auto leading-relaxed">
+            Không gian trưng bày nghệ thuật số tương tác, sống động dành cho học sinh.
           </p>
         </div>
 
@@ -57,16 +56,16 @@ export const Home = () => {
         <div className={`grid grid-cols-1 gap-8 w-full px-4 ${demoProject ? 'md:grid-cols-2 lg:grid-cols-3 max-w-6xl' : 'md:grid-cols-2 max-w-4xl'}`}>
           
           {/* Teacher Card */}
-          <div className="group relative flex flex-col items-center p-8 md:p-10 bg-slate-800/60 backdrop-blur-xl rounded-[2.5rem] border border-slate-700/50 hover:border-purple-400/80 hover:bg-slate-800/80 transition-all duration-500 transform hover:-translate-y-2 hover:shadow-[0_20px_40px_-15px_rgba(168,85,247,0.3)] text-center">
+          <div className="group relative flex flex-col items-center p-6 md:p-8 bg-slate-800/60 backdrop-blur-xl rounded-3xl border border-slate-700/50 hover:border-purple-400/80 hover:bg-slate-800/80 transition-all duration-500 transform hover:-translate-y-2 hover:shadow-[0_20px_40px_-15px_rgba(168,85,247,0.3)] text-center">
             <div className="absolute inset-0 bg-gradient-to-b from-purple-500/5 to-transparent rounded-[2.5rem] opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
             
             <div className="w-24 h-24 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-full flex items-center justify-center mb-6 shadow-inner ring-1 ring-purple-500/30 group-hover:scale-110 group-hover:rotate-12 transition-all duration-500 z-10">
               <span className="text-5xl drop-shadow-lg">👩‍🏫</span>
             </div>
             
-            <h2 className="text-3xl font-bold mb-4 text-white tracking-wide z-10">Dành Cho Giáo Viên</h2>
-            <p className="text-slate-400 text-lg leading-relaxed mb-8 flex-1 z-10">
-              Đăng nhập hoặc Đăng ký để tạo phòng tranh. Tải ảnh, chọn chủ đề và gửi Mã Phòng nhanh chóng cho học sinh.
+            <h2 className="text-2xl font-bold mb-3 text-white tracking-wide z-10">Dành Cho Giáo Viên</h2>
+            <p className="text-slate-400 text-sm leading-relaxed mb-6 flex-1 z-10">
+              Đăng nhập để tạo phòng tranh. Tải ảnh, chọn chủ đề và tạo Mã Phòng cho học sinh tham quan.
             </p>
             
             <button 
@@ -78,16 +77,16 @@ export const Home = () => {
           </div>
 
           {/* Student Card */}
-          <div className="group relative flex flex-col items-center p-8 md:p-10 bg-slate-800/60 backdrop-blur-xl rounded-[2.5rem] border border-slate-700/50 hover:border-cyan-400/80 hover:bg-slate-800/80 transition-all duration-500 transform hover:-translate-y-2 hover:shadow-[0_20px_40px_-15px_rgba(6,182,212,0.3)] text-center">
+          <div className="group relative flex flex-col items-center p-6 md:p-8 bg-slate-800/60 backdrop-blur-xl rounded-3xl border border-slate-700/50 hover:border-cyan-400/80 hover:bg-slate-800/80 transition-all duration-500 transform hover:-translate-y-2 hover:shadow-[0_20px_40px_-15px_rgba(6,182,212,0.3)] text-center">
             <div className="absolute inset-0 bg-gradient-to-b from-cyan-500/5 to-transparent rounded-[2.5rem] opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
             
             <div className="w-24 h-24 bg-gradient-to-br from-cyan-500/20 to-blue-500/20 rounded-full flex items-center justify-center mb-6 shadow-inner ring-1 ring-cyan-500/30 group-hover:scale-110 group-hover:-rotate-12 transition-all duration-500 z-10">
               <span className="text-5xl drop-shadow-lg">🎮</span>
             </div>
             
-            <h2 className="text-3xl font-bold mb-4 text-white tracking-wide z-10">Dành Cho Học Sinh</h2>
-            <p className="text-slate-400 text-lg leading-relaxed mb-8 flex-1 z-10">
-              Truy cập ẩn danh không cần tài khoản! Chỉ cần nhập Mã Phòng (Gallery Code) từ giáo viên để tham quan ngay.
+            <h2 className="text-2xl font-bold mb-3 text-white tracking-wide z-10">Dành Cho Học Sinh</h2>
+            <p className="text-slate-400 text-sm leading-relaxed mb-6 flex-1 z-10">
+              Bạn không cần tài khoản! Chỉ cần nhập Mã Phòng (Gallery Code) từ giáo viên để tham quan.
             </p>
             
             <button 
@@ -100,7 +99,7 @@ export const Home = () => {
 
           {/* Demo Project Form */}
           {demoProject && (
-            <div className="group relative flex flex-col items-center p-8 md:p-10 bg-slate-800/60 backdrop-blur-xl rounded-[2.5rem] border border-slate-700/50 hover:border-green-400/80 hover:bg-slate-800/80 transition-all duration-500 transform hover:-translate-y-2 hover:shadow-[0_20px_40px_-15px_rgba(16,185,129,0.3)] text-center">
+            <div className="group relative flex flex-col items-center p-6 md:p-8 bg-slate-800/60 backdrop-blur-xl rounded-3xl border border-slate-700/50 hover:border-green-400/80 hover:bg-slate-800/80 transition-all duration-500 transform hover:-translate-y-2 hover:shadow-[0_20px_40px_-15px_rgba(16,185,129,0.3)] text-center">
               <div className="absolute inset-0 bg-gradient-to-b from-green-500/5 to-transparent rounded-[2.5rem] opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
               
               <div className="w-full flex-1 flex flex-col items-center justify-center z-10 mb-8 border border-slate-700 rounded-2xl bg-slate-900 overflow-hidden relative">
