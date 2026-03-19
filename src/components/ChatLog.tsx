@@ -105,7 +105,7 @@ export const ChatLog = ({ galleryId }: { galleryId: string }) => {
   
   return (
     <div 
-      className={`absolute top-20 left-4 md:left-6 z-50 flex flex-col gap-2 transition-opacity duration-1000 w-[60vw] md:w-80 ${isFaded && !isHovered ? 'opacity-30' : 'opacity-100'}`}
+      className={`fixed bottom-4 left-4 right-4 md:absolute md:bottom-auto md:top-20 md:left-6 md:right-auto md:w-80 z-50 flex flex-col gap-2 transition-opacity duration-1000 ${isFaded && !isHovered ? 'opacity-30' : 'opacity-100'}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onTouchStart={() => setIsHovered(true)}
@@ -121,7 +121,7 @@ export const ChatLog = ({ galleryId }: { galleryId: string }) => {
         <style dangerouslySetInnerHTML={{__html: `::-webkit-scrollbar { display: none; }`}} />
         
         {messages.map((msg) => (
-          <div key={msg.id} className="text-sm px-2.5 py-1.5 bg-black/40 backdrop-blur-sm rounded-lg border border-white/10 break-words shadow-sm">
+          <div key={msg.id} className="text-[12px] md:text-sm px-2.5 py-1.5 bg-black/40 backdrop-blur-sm rounded-lg border border-white/10 break-words shadow-sm">
             <span style={{ color: msg.color }} className="font-bold mr-2 tracking-wide drop-shadow-md">{msg.sender}:</span>
             <span className="text-white/95 font-medium drop-shadow-md">{msg.text}</span>
           </div>

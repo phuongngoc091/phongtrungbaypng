@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useFrame } from '@react-three/fiber'
 import { rtdb } from '../utils/firebase'
-import { ref, onValue, set, onDisconnect } from 'firebase/database'
+import { ref as refDb, onValue, set, onDisconnect } from 'firebase/database'
 import { useStore } from '../store/useStore'
 import { useAuthStore } from '../store/useAuthStore'
 import { MY_PLAYER_STATE } from './Player'
@@ -18,6 +18,7 @@ interface PlayerData {
   color: string
   chatMessage?: string
   chatTimestamp?: number
+  lastActive?: number
 }
 
 export const Multiplayer = ({ galleryId }: { galleryId: string }) => {
@@ -32,7 +33,7 @@ export const Multiplayer = ({ galleryId }: { galleryId: string }) => {
 
   useEffect(() => {
     if (!galleryId) return
-    const roomRef = ref(rtdb, `rooms/${galleryId}/players`)
+    const roomRef = refDb(rtdb, `rooms/${galleryId}/players`)
     
     // Listen for everyone
     const unsubscribe = onValue(roomRef, (snapshot) => {
@@ -48,7 +49,7 @@ export const Multiplayer = ({ galleryId }: { galleryId: string }) => {
     })
 
     // Auto cleanup on disconnect
-    const meRef = ref(rtdb, `rooms/${galleryId}/players/${myId}`)
+    const meRef = refDb(rtdb, `rooms/${galleryId}/players/${myId}`)
     onDisconnect(meRef).remove()
 
     return () => {
@@ -66,7 +67,7 @@ export const Multiplayer = ({ galleryId }: { galleryId: string }) => {
     lastSync.current = now
 
     // Push my current explicit player state to RTDB
-    const meRef = ref(rtdb, `rooms/${galleryId}/players/${myId}`)
+    const meRef = refDb(rtdb, `rooms/${galleryId}/players/${myId}`)
     
     // Use update to only patch my specific properties without overwriting if not needed, 
     // or set if we just want to ensure it's there. 
@@ -85,17 +86,28 @@ export const Multiplayer = ({ galleryId }: { galleryId: string }) => {
   return (
     <group>
       {Object.entries(players).map(([id, p]) => (
-        <RemoteCharacter key={id} data={p} />
+        <RemoteCharacter key={id} id={id} galleryId={galleryId} data={p} />
       ))}
     </group>
   )
 }
 
-function RemoteCharacter({ data }: { data: PlayerData }) {
+function RemoteCharacter({ id, galleryId, data }: { id: string, galleryId: string, data: PlayerData }) {
   const ref = useRef<THREE.Group>(null)
   
   useFrame(() => {
     if (!ref.current) return
+    
+    // Ghost cleanup: if player is inactive for > 15 seconds, hide them and remove from DB
+    if (data.lastActive && Date.now() - data.lastActive > 15000) {
+      ref.current.visible = false
+      // Clean up zombie nodes in RTDB to prevent DB growth
+      set(refDb(rtdb, `rooms/${galleryId}/players/${id}`), null).catch(() => {})
+      return
+    } else {
+      ref.current.visible = true
+    }
+
     // Smooth interpolation (lerp) towards the target network position
     ref.current.position.lerp(new THREE.Vector3(data.x, data.y, data.z), 0.2)
     
