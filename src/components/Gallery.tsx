@@ -76,18 +76,18 @@ const LookJoystick = () => {
 
   return (
     <div 
-      className="w-32 h-32 bg-black/40 backdrop-blur-md rounded-full shadow-lg border-2 border-white/50 flex justify-center items-center touch-none select-none relative"
+      className="w-24 h-24 md:w-32 md:h-32 bg-black/40 backdrop-blur-md rounded-full shadow-lg border-2 border-white/50 flex justify-center items-center touch-none select-none relative"
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
       onPointerCancel={handlePointerUp}
     >
-      <div className="absolute w-4 h-4 rounded-full bg-white/20 pointer-events-none" />
+      <div className="absolute w-3 h-3 md:w-4 md:h-4 rounded-full bg-white/20 pointer-events-none" />
       <div 
-        className="w-16 h-16 bg-gradient-to-br from-pink-400 to-purple-600 rounded-full shadow-[0_0_15px_rgba(236,72,153,0.5)] absolute pointer-events-none"
+        className="w-12 h-12 md:w-16 md:h-16 bg-gradient-to-br from-pink-400 to-purple-600 rounded-full shadow-[0_0_15px_rgba(236,72,153,0.5)] absolute pointer-events-none"
         style={{ transform: `translate(${position.x}px, ${position.y}px)` }}
       >
-        <div className="absolute inset-2 rounded-full border border-white/30" />
+        <div className="absolute inset-1.5 md:inset-2 rounded-full border border-white/30" />
       </div>
     </div>
   )
@@ -121,17 +121,17 @@ export const Gallery = () => {
   return (
     <div className="w-full h-full relative overflow-hidden bg-black">
       {/* UI Overlay */}
-      <div className="absolute top-6 left-6 z-10 flex gap-4">
+      <div className="absolute top-4 left-4 z-10 flex gap-2 md:gap-4 md:top-6 md:left-6">
         <button 
           onClick={handleBack}
-          className="p-3 bg-black/40 backdrop-blur-md rounded-full hover:bg-black/60 transition-colors text-white border border-white/20 shadow-lg"
+          className="p-2 md:p-3 bg-black/40 backdrop-blur-md rounded-full hover:bg-black/60 transition-colors text-white border border-white/20 shadow-lg flex-shrink-0"
         >
-          <ArrowLeft className="w-6 h-6" />
+          <ArrowLeft className="w-5 h-5 md:w-6 md:h-6" />
         </button>
         {studentInfo && (
-          <div className="px-6 py-3 bg-black/40 backdrop-blur-md rounded-full text-white border border-white/20 flex items-center gap-3 shadow-lg">
-            <span className="font-bold text-lg">{studentInfo.nickname}</span>
-            <span className="text-sm opacity-80 backdrop: uppercase tracking-wider bg-white/10 px-2 py-0.5 rounded">
+          <div className="px-3 md:px-6 py-2 md:py-3 bg-black/40 backdrop-blur-md rounded-full text-white border border-white/20 flex flex-wrap items-center gap-2 md:gap-3 shadow-lg">
+            <span className="font-bold text-sm md:text-lg whitespace-nowrap">{studentInfo.nickname}</span>
+            <span className="text-[10px] md:text-sm opacity-80 backdrop: uppercase tracking-wider bg-white/10 px-1 md:px-2 py-0.5 rounded">
               {studentInfo.characterType}
             </span>
           </div>
@@ -139,26 +139,26 @@ export const Gallery = () => {
       </div>
 
       {/* Camera Controls Overlay */}
-      <div className="absolute top-6 right-6 z-10 flex flex-col gap-2">
+      <div className="absolute top-4 right-4 z-10 flex flex-col md:flex-row gap-2 md:top-6 md:right-6">
         <button 
           onClick={() => setCameraView('1st')}
-          className={`px-4 py-3 backdrop-blur-md rounded-xl transition-all border shadow-lg flex items-center gap-2 ${
+          className={`px-3 py-2 md:px-4 md:py-3 backdrop-blur-md rounded-xl transition-all border shadow-lg flex items-center gap-1 md:gap-2 text-xs md:text-base ${
             cameraView === '1st' ? 'bg-pink-500 text-white border-pink-400' : 'bg-black/60 text-slate-300 border-white/20 hover:bg-black/80'
           }`}
         >
-          <Eye className="w-5 h-5" /> Mắt Nhìn Gần
+          <Eye className="w-4 h-4 md:w-5 md:h-5" /> <span className="hidden sm:inline">Mắt Nhìn Gần</span>
         </button>
         <button 
           onClick={() => setCameraView('3rd')}
-          className={`px-4 py-3 backdrop-blur-md rounded-xl transition-all border shadow-lg flex items-center gap-2 ${
+          className={`px-3 py-2 md:px-4 md:py-3 backdrop-blur-md rounded-xl transition-all border shadow-lg flex items-center gap-1 md:gap-2 text-xs md:text-base ${
             cameraView === '3rd' ? 'bg-blue-500 text-white border-blue-400' : 'bg-black/60 text-slate-300 border-white/20 hover:bg-black/80'
           }`}
         >
-          <User className="w-5 h-5" /> Theo Dõi
+          <User className="w-4 h-4 md:w-5 md:h-5" /> <span className="hidden sm:inline">Theo Dõi</span>
         </button>
       </div>
 
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 text-white/90 bg-black/60 px-8 py-3 rounded-full backdrop-blur-md pointer-events-none shadow-xl border border-white/10">
+      <div className="hidden md:block absolute bottom-8 left-1/2 -translate-x-1/2 z-10 text-white/90 bg-black/60 px-8 py-3 rounded-full backdrop-blur-md pointer-events-none shadow-xl border border-white/10">
         Dùng phím <strong className="text-yellow-400">W A S D</strong> hoặc <strong className="text-yellow-400">Mũi Tên</strong> để di chuyển và xoay nhân vật.
       </div>
 
@@ -182,61 +182,61 @@ export const Gallery = () => {
       {/* Joystick Toggle Button */}
       <button 
         onClick={() => setShowJoystick(!showJoystick)}
-        className={`fixed bottom-[20px] right-[20px] z-[999] px-5 py-4 rounded-full shadow-2xl backdrop-blur-md border border-white/40 transition-all flex xl:hidden items-center gap-2 ${
+        className={`fixed top-4 left-1/2 -translate-x-1/2 z-[999] px-3 py-2 rounded-full shadow-2xl backdrop-blur-md border transition-all flex xl:hidden items-center gap-1 ${
           showJoystick 
             ? 'bg-pink-500 text-white border-pink-400' 
-            : 'bg-black/60 text-white/90 hover:bg-black/80 hover:scale-105'
+            : 'bg-black/60 text-white/90 border-white/40 hover:bg-black/80'
         }`}
-        title="Bật/Tắt phím di chuyển cảm ứng"
+        title="Bật/Tắt phím di chuyển"
       >
-        <Gamepad2 className="w-7 h-7" />
-        <span className="font-bold text-sm hidden md:inline">{showJoystick ? 'Tắt Điều Khiển' : 'Bật Điều Khiển'}</span>
+        <Gamepad2 className="w-5 h-5" />
+        <span className="font-bold text-xs">{showJoystick ? 'Tắt Phím' : 'Bật Phím'}</span>
       </button>
 
       {/* Mobile Controls (D-Pads) */}
       {showJoystick && (
         <>
           {/* Look Controls (Left) */}
-          <div className="fixed bottom-[100px] left-[40px] z-[999] animate-in slide-in-from-bottom-5">
+          <div className="fixed bottom-6 left-6 z-[999] animate-in slide-in-from-bottom-5">
             <LookJoystick />
-            <div className="text-white/60 text-xs text-center mt-3 font-medium tracking-wide">Chạm đúp để Reset</div>
+            <div className="text-white/60 text-[10px] md:text-xs text-center mt-2 font-medium tracking-wide">Chạm đúp để Reset</div>
           </div>
 
           {/* Movement Controls (Right) */}
-          <div className="fixed bottom-[100px] right-[40px] z-[999] flex flex-col items-center gap-2 animate-in slide-in-from-bottom-5">
+          <div className="fixed bottom-6 right-6 z-[999] flex flex-col items-center gap-1 md:gap-2 animate-in slide-in-from-bottom-5">
           <button
-            className="w-16 h-16 bg-black/40 backdrop-blur-md rounded-full shadow-lg border-2 border-white/50 flex justify-center items-center active:bg-white/40 touch-none select-none"
+            className="w-12 h-12 md:w-16 md:h-16 bg-black/40 backdrop-blur-md rounded-full shadow-lg border-2 border-white/50 flex justify-center items-center active:bg-white/40 touch-none select-none"
             onPointerDown={(e) => { e.preventDefault(); setJoystickState({ forward: true }) }}
             onPointerUp={(e) => { e.preventDefault(); setJoystickState({ forward: false }) }}
             onPointerLeave={(e) => { e.preventDefault(); setJoystickState({ forward: false }) }}
           >
-             <ArrowUp className="w-10 h-10 text-white" />
+             <ArrowUp className="w-8 h-8 md:w-10 md:h-10 text-white" />
           </button>
-          <div className="flex gap-16">
+          <div className="flex gap-10 md:gap-16">
             <button
-              className="w-16 h-16 bg-black/40 backdrop-blur-md rounded-full shadow-lg border-2 border-white/50 flex justify-center items-center active:bg-white/40 touch-none select-none"
+              className="w-12 h-12 md:w-16 md:h-16 bg-black/40 backdrop-blur-md rounded-full shadow-lg border-2 border-white/50 flex justify-center items-center active:bg-white/40 touch-none select-none"
               onPointerDown={(e) => { e.preventDefault(); setJoystickState({ left: true }) }}
               onPointerUp={(e) => { e.preventDefault(); setJoystickState({ left: false }) }}
               onPointerLeave={(e) => { e.preventDefault(); setJoystickState({ left: false }) }}
             >
-               <CornerUpLeft className="w-10 h-10 text-white" />
+               <CornerUpLeft className="w-8 h-8 md:w-10 md:h-10 text-white" />
             </button>
             <button
-              className="w-16 h-16 bg-black/40 backdrop-blur-md rounded-full shadow-lg border-2 border-white/50 flex justify-center items-center active:bg-white/40 touch-none select-none"
+              className="w-12 h-12 md:w-16 md:h-16 bg-black/40 backdrop-blur-md rounded-full shadow-lg border-2 border-white/50 flex justify-center items-center active:bg-white/40 touch-none select-none"
               onPointerDown={(e) => { e.preventDefault(); setJoystickState({ right: true }) }}
               onPointerUp={(e) => { e.preventDefault(); setJoystickState({ right: false }) }}
               onPointerLeave={(e) => { e.preventDefault(); setJoystickState({ right: false }) }}
             >
-               <CornerUpRight className="w-10 h-10 text-white" />
+               <CornerUpRight className="w-8 h-8 md:w-10 md:h-10 text-white" />
             </button>
           </div>
           <button
-            className="w-16 h-16 bg-black/40 backdrop-blur-md rounded-full shadow-lg border-2 border-white/50 flex justify-center items-center active:bg-white/40 touch-none select-none"
+            className="w-12 h-12 md:w-16 md:h-16 bg-black/40 backdrop-blur-md rounded-full shadow-lg border-2 border-white/50 flex justify-center items-center active:bg-white/40 touch-none select-none"
             onPointerDown={(e) => { e.preventDefault(); setJoystickState({ backward: true }) }}
             onPointerUp={(e) => { e.preventDefault(); setJoystickState({ backward: false }) }}
             onPointerLeave={(e) => { e.preventDefault(); setJoystickState({ backward: false }) }}
           >
-             <ArrowDown className="w-10 h-10 text-white" />
+             <ArrowDown className="w-8 h-8 md:w-10 md:h-10 text-white" />
           </button>
         </div>
         </>
