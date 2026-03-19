@@ -57,7 +57,18 @@ export const useStore = create<AppState>((set) => ({
   setBannerText: (text) => set({ galleryBannerText: text }),
   setBannerImage: (imageUrl) => set({ galleryBannerImage: imageUrl }),
   setCameraView: (view) => set({ cameraView: view }),
-  setChatMessage: (msg) => set({ chatMessage: msg, chatTimestamp: Date.now() }),
+  setChatMessage: (msg) => {
+    const now = Date.now();
+    set({ chatMessage: msg, chatTimestamp: now });
+    setTimeout(() => {
+      set((state) => {
+        if (state.chatTimestamp === now) {
+          return { chatMessage: '' };
+        }
+        return {};
+      });
+    }, 5000);
+  },
   resetGalleryState: () => set({
     projectName: 'Dự án của tôi',
     uploadedImages: [],

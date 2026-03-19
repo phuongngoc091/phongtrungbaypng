@@ -109,6 +109,14 @@ export const Gallery = () => {
 
   const handleSendChat = (e: React.FormEvent) => {
     e.preventDefault()
+    
+    // 5-second cooldown check
+    const lastTime = useStore.getState().chatTimestamp;
+    if (Date.now() - lastTime < 5000) {
+      alert('Vui lòng đợi 5 giây giữa các lần chat!');
+      return;
+    }
+
     if (!chatInput.trim()) {
       setIsChatOpen(false)
       return;
@@ -251,7 +259,6 @@ export const Gallery = () => {
           {/* Look Controls (Left) */}
           <div className="fixed bottom-6 left-6 z-[999] animate-in slide-in-from-bottom-5">
             <LookJoystick />
-            <div className="text-white/60 text-[10px] md:text-xs text-center mt-2 font-medium tracking-wide">Chạm đúp để Reset</div>
           </div>
 
           {/* Movement Controls (Right) */}
