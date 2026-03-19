@@ -105,7 +105,7 @@ export const ChatLog = ({ galleryId }: { galleryId: string }) => {
   
   return (
     <div 
-      className={`fixed bottom-4 left-4 right-4 md:absolute md:bottom-auto md:top-20 md:left-6 md:right-auto md:w-80 z-50 flex flex-col gap-2 transition-opacity duration-1000 ${isFaded && !isHovered ? 'opacity-30' : 'opacity-100'}`}
+      className={`absolute top-20 left-4 md:left-6 z-50 flex flex-col gap-2 transition-opacity duration-1000 w-[60vw] md:w-80 ${isFaded && !isHovered ? 'opacity-30' : 'opacity-100'}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       onTouchStart={() => setIsHovered(true)}
@@ -130,7 +130,7 @@ export const ChatLog = ({ galleryId }: { galleryId: string }) => {
       </div>
 
       {/* Input Form */}
-      <form onSubmit={handleSendChat} className={`flex gap-2 w-full mt-1 ${isFaded && !isHovered ? 'pointer-events-none' : ''}`}>
+      <form onSubmit={handleSendChat} className={`fixed bottom-6 left-1/2 -translate-x-1/2 w-[60vw] max-w-[280px] md:max-w-none md:static md:translate-x-0 md:w-full flex gap-2 mt-1 z-50 ${isFaded && !isHovered ? 'pointer-events-none' : ''}`}>
         <input 
           type="text" 
           value={chatInput}
