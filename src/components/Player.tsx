@@ -71,16 +71,28 @@ export const Player = () => {
     const isMoving = f || b || l || r
     
     // Tank controls setup
-    if (l || joystickState.camLeft) playerRef.current.rotation.y += ROTATION_SPEED * delta
-    if (r || joystickState.camRight) playerRef.current.rotation.y -= ROTATION_SPEED * delta
+    if (l) playerRef.current.rotation.y += ROTATION_SPEED * delta
+    if (r) playerRef.current.rotation.y -= ROTATION_SPEED * delta
+
+    // Analog Camera Look
+    if (joystickState.camPan !== 0) {
+      playerRef.current.rotation.y -= joystickState.camPan * ROTATION_SPEED * delta * 0.8;
+    }
     
     // Camera Tilt (Vertical Look)
-    if (joystickState.camUp) camTilt.current += 1.5 * delta;
-    if (joystickState.camDown) camTilt.current -= 1.5 * delta;
+    if (joystickState.camTilt !== 0) {
+      // joystickState.camTilt is negative when dragged UP
+      camTilt.current -= joystickState.camTilt * 1.5 * delta;
+    }
+    
+    if (joystickState.resetLook) {
+      camTilt.current = 0;
+    }
+    
     camTilt.current = Math.max(-Math.PI/3, Math.min(Math.PI/3, camTilt.current));
     
     // Auto-center camTilt if not actively looking up/down via joystick or pointer
-    if (!joystickState.camUp && !joystickState.camDown && !isPointerDown.current) {
+    if (joystickState.camTilt === 0 && !isPointerDown.current) {
       camTilt.current = THREE.MathUtils.lerp(camTilt.current, 0, 0.05);
     }
     

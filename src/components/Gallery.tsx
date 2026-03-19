@@ -1,10 +1,10 @@
-import { Suspense, useState } from 'react'
+import { Suspense, useState, useRef } from 'react'
 import { Canvas } from '@react-three/fiber'
 import { KeyboardControls } from '@react-three/drei'
 import { useStore } from '../store/useStore'
 import type { ThemeType } from '../store/useStore'
 import { useAuthStore } from '../store/useAuthStore'
-import { ArrowLeft, Eye, User, ArrowUp, ArrowDown, CornerUpLeft, CornerUpRight, Gamepad2, ArrowRight } from 'lucide-react'
+import { ArrowLeft, Eye, User, ArrowUp, ArrowDown, CornerUpLeft, CornerUpRight, Gamepad2 } from 'lucide-react'
 import { Player } from './Player'
 import { Room } from './Room'
 import { ArtFrames } from './ArtFrames'
@@ -24,6 +24,73 @@ const themeSettings: Record<ThemeType, { bg: string; fog: string; light: string;
   cute: { bg: '#ffd1dc', fog: '#ffb7b2', light: '#ffffff', ambientIntensity: 1.2 },
   galaxy: { bg: '#02000d', fog: '#050510', light: '#a78bfa', ambientIntensity: 0.4 },
   aquarium: { bg: '#00426b', fog: '#002244', light: '#8be9fd', ambientIntensity: 0.7 },
+}
+
+const LookJoystick = () => {
+  const setJoystickState = useStore(s => s.setJoystickState)
+  const [position, setPosition] = useState({ x: 0, y: 0 })
+  const isDragging = useRef(false)
+  const center = useRef({ x: 0, y: 0 })
+  const lastTap = useRef(0)
+
+  const handlePointerDown = (e: React.PointerEvent) => {
+    e.currentTarget.setPointerCapture(e.pointerId);
+    isDragging.current = true;
+    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect()
+    center.current = { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 }
+    
+    // Check double tap
+    const now = Date.now()
+    if (now - lastTap.current < 300) {
+      setJoystickState({ resetLook: true })
+      setTimeout(() => setJoystickState({ resetLook: false }), 100)
+    }
+    lastTap.current = now;
+  }
+
+  const handlePointerMove = (e: React.PointerEvent) => {
+    if (!isDragging.current) return;
+    const dx = e.clientX - center.current.x;
+    const dy = e.clientY - center.current.y;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+    const maxDist = 40; // Max visual travel
+    
+    let nx = dx;
+    let ny = dy;
+    if (distance > maxDist) {
+       nx = (dx / distance) * maxDist;
+       ny = (dy / distance) * maxDist;
+    }
+    
+    setPosition({ x: nx, y: ny });
+    // Normalize to -1..1
+    setJoystickState({ camPan: nx / maxDist, camTilt: ny / maxDist });
+  }
+
+  const handlePointerUp = (e: React.PointerEvent) => {
+    isDragging.current = false;
+    e.currentTarget.releasePointerCapture(e.pointerId);
+    setPosition({ x: 0, y: 0 });
+    setJoystickState({ camPan: 0, camTilt: 0 });
+  }
+
+  return (
+    <div 
+      className="w-32 h-32 bg-black/40 backdrop-blur-md rounded-full shadow-lg border-2 border-white/50 flex justify-center items-center touch-none select-none relative"
+      onPointerDown={handlePointerDown}
+      onPointerMove={handlePointerMove}
+      onPointerUp={handlePointerUp}
+      onPointerCancel={handlePointerUp}
+    >
+      <div className="absolute w-4 h-4 rounded-full bg-white/20 pointer-events-none" />
+      <div 
+        className="w-16 h-16 bg-gradient-to-br from-pink-400 to-purple-600 rounded-full shadow-[0_0_15px_rgba(236,72,153,0.5)] absolute pointer-events-none"
+        style={{ transform: `translate(${position.x}px, ${position.y}px)` }}
+      >
+        <div className="absolute inset-2 rounded-full border border-white/30" />
+      </div>
+    </div>
+  )
 }
 
 export const Gallery = () => {
@@ -130,41 +197,9 @@ export const Gallery = () => {
       {showJoystick && (
         <>
           {/* Look Controls (Left) */}
-          <div className="fixed bottom-[100px] left-[40px] z-[999] flex flex-col items-center gap-2 animate-in slide-in-from-bottom-5">
-            <button
-              className="w-16 h-16 bg-black/40 backdrop-blur-md rounded-full shadow-lg border-2 border-white/50 flex justify-center items-center active:bg-white/40 touch-none select-none"
-              onPointerDown={(e) => { e.preventDefault(); setJoystickState({ camUp: true }) }}
-              onPointerUp={(e) => { e.preventDefault(); setJoystickState({ camUp: false }) }}
-              onPointerLeave={(e) => { e.preventDefault(); setJoystickState({ camUp: false }) }}
-            >
-               <ArrowUp className="w-10 h-10 text-pink-400" />
-            </button>
-            <div className="flex gap-16">
-              <button
-                className="w-16 h-16 bg-black/40 backdrop-blur-md rounded-full shadow-lg border-2 border-white/50 flex justify-center items-center active:bg-white/40 touch-none select-none"
-                onPointerDown={(e) => { e.preventDefault(); setJoystickState({ camLeft: true }) }}
-                onPointerUp={(e) => { e.preventDefault(); setJoystickState({ camLeft: false }) }}
-                onPointerLeave={(e) => { e.preventDefault(); setJoystickState({ camLeft: false }) }}
-              >
-                 <ArrowLeft className="w-10 h-10 text-pink-400" />
-              </button>
-              <button
-                className="w-16 h-16 bg-black/40 backdrop-blur-md rounded-full shadow-lg border-2 border-white/50 flex justify-center items-center active:bg-white/40 touch-none select-none"
-                onPointerDown={(e) => { e.preventDefault(); setJoystickState({ camRight: true }) }}
-                onPointerUp={(e) => { e.preventDefault(); setJoystickState({ camRight: false }) }}
-                onPointerLeave={(e) => { e.preventDefault(); setJoystickState({ camRight: false }) }}
-              >
-                 <ArrowRight className="w-10 h-10 text-pink-400" />
-              </button>
-            </div>
-            <button
-              className="w-16 h-16 bg-black/40 backdrop-blur-md rounded-full shadow-lg border-2 border-white/50 flex justify-center items-center active:bg-white/40 touch-none select-none"
-              onPointerDown={(e) => { e.preventDefault(); setJoystickState({ camDown: true }) }}
-              onPointerUp={(e) => { e.preventDefault(); setJoystickState({ camDown: false }) }}
-              onPointerLeave={(e) => { e.preventDefault(); setJoystickState({ camDown: false }) }}
-            >
-               <ArrowDown className="w-10 h-10 text-pink-400" />
-            </button>
+          <div className="fixed bottom-[100px] left-[40px] z-[999] animate-in slide-in-from-bottom-5">
+            <LookJoystick />
+            <div className="text-white/60 text-xs text-center mt-3 font-medium tracking-wide">Chạm đúp để Reset</div>
           </div>
 
           {/* Movement Controls (Right) */}

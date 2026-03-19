@@ -16,10 +16,10 @@ export interface AppState {
   galleryBannerText: string
   galleryBannerImage: string | null
   cameraView: '1st' | '3rd'
-  joystickState: { forward: boolean; backward: boolean; left: boolean; right: boolean; camUp: boolean; camDown: boolean; camLeft: boolean; camRight: boolean }
+  joystickState: { forward: boolean; backward: boolean; left: boolean; right: boolean; camPan: number; camTilt: number; resetLook: boolean }
   
   setView: (view: AppState['view']) => void
-  setJoystickState: (state: Partial<{ forward: boolean; backward: boolean; left: boolean; right: boolean; camUp: boolean; camDown: boolean; camLeft: boolean; camRight: boolean }>) => void
+  setJoystickState: (state: Partial<{ forward: boolean; backward: boolean; left: boolean; right: boolean; camPan: number; camTilt: number; resetLook: boolean }>) => void
   setProjectName: (name: string) => void
   addUploadedImage: (imageUrl: string) => void
   setCurrentTheme: (theme: ThemeType) => void
@@ -39,7 +39,7 @@ export const useStore = create<AppState>((set) => ({
   galleryBannerText: 'phuongngoc091',
   galleryBannerImage: null,
   cameraView: '3rd',
-  joystickState: { forward: false, backward: false, left: false, right: false, camUp: false, camDown: false, camLeft: false, camRight: false },
+  joystickState: { forward: false, backward: false, left: false, right: false, camPan: 0, camTilt: 0, resetLook: false },
   
   setView: (view) => set({ view }),
   setJoystickState: (state) => set((prev) => ({ joystickState: { ...prev.joystickState, ...state } })),
