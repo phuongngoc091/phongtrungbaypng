@@ -21,7 +21,7 @@ function App() {
 
   return (
     <AuthProvider>
-      <div className="w-screen h-screen bg-slate-900 text-slate-100 font-sans overflow-hidden">
+      <div className="fixed inset-0 w-full h-[100dvh] bg-slate-900 text-slate-100 font-sans overflow-hidden overscroll-none">
         {view === 'home' && <Home />}
         {view === 'auth' && <AuthView />}
         {view === 'teacher' && <TeacherView />}

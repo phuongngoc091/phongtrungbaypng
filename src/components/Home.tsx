@@ -32,13 +32,13 @@ export const Home = () => {
   }, [])
 
   return (
-    <div className="h-full w-full overflow-y-auto overflow-x-hidden relative bg-slate-900 text-white flex flex-col items-center justify-start p-6 pb-24">
+    <div className="absolute inset-0 w-full overflow-y-auto overflow-x-hidden bg-slate-900 text-white scroll-smooth touch-pan-y">
       {/* Background Effects */}
-      <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-10 pointer-events-none min-h-[150%]"></div>
+      <div className="fixed inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-10 pointer-events-none"></div>
       <div className="fixed top-1/4 left-1/4 w-96 h-96 bg-purple-600/20 rounded-full blur-[120px] pointer-events-none"></div>
       <div className="fixed bottom-1/4 right-1/4 w-96 h-96 bg-cyan-600/20 rounded-full blur-[120px] pointer-events-none"></div>
 
-      <div className="max-w-5xl w-full z-10 flex-1 flex flex-col items-center justify-center">
+      <div className="relative min-h-[100dvh] w-full max-w-5xl mx-auto z-10 flex flex-col items-center justify-center p-6 pb-24">
         {/* Intro Section */}
         <div className="text-center mb-10 animate-fade-in-up mt-8 lg:mt-0">
           <div className="inline-block px-4 py-1.5 rounded-full border border-purple-500/30 bg-purple-500/10 text-purple-300 text-sm font-semibold mb-4 tracking-wide backdrop-blur-sm">
