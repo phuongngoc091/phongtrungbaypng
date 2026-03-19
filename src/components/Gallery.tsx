@@ -4,11 +4,12 @@ import { KeyboardControls } from '@react-three/drei'
 import { useStore } from '../store/useStore'
 import type { ThemeType } from '../store/useStore'
 import { useAuthStore } from '../store/useAuthStore'
-import { ArrowLeft, Eye, User, ArrowUp, ArrowDown, CornerUpLeft, CornerUpRight, Gamepad2, MessageSquare } from 'lucide-react'
+import { ArrowLeft, Eye, User, ArrowUp, ArrowDown, CornerUpLeft, CornerUpRight, Gamepad2 } from 'lucide-react'
 import { Player } from './Player'
 import { Room } from './Room'
 import { ArtFrames } from './ArtFrames'
 import { Multiplayer } from './Multiplayer'
+import { ChatLog } from './ChatLog'
 
 // Keyboard mapping for Drei's KeyboardControls
 const keyboardMap = [
@@ -100,31 +101,9 @@ export const Gallery = () => {
   const cameraView = useStore(s => s.cameraView)
   const setCameraView = useStore(s => s.setCameraView)
   const setJoystickState = useStore(s => s.setJoystickState)
-  const setChatMessage = useStore(s => s.setChatMessage)
 
   const profile = useAuthStore(s => s.profile)
   const [isJoystickUIOpen, setIsJoystickUIOpen] = useState(false)
-  const [chatInput, setChatInput] = useState('')
-  const [isChatOpen, setIsChatOpen] = useState(false)
-
-  const handleSendChat = (e: React.FormEvent) => {
-    e.preventDefault()
-    
-    // 5-second cooldown check
-    const lastTime = useStore.getState().chatTimestamp;
-    if (Date.now() - lastTime < 5000) {
-      alert('Vui lòng đợi 5 giây giữa các lần chat!');
-      return;
-    }
-
-    if (!chatInput.trim()) {
-      setIsChatOpen(false)
-      return;
-    }
-    setChatMessage(chatInput.trim())
-    setChatInput('')
-    setIsChatOpen(false)
-  }
   
   const theme = themeSettings[currentTheme]
 
@@ -160,6 +139,8 @@ export const Gallery = () => {
         )}
       </div>
 
+      <ChatLog galleryId={window.location.hash || 'default-room'} />
+
       {/* Action Controls Overlay (Right side) */}
       <div className="absolute top-4 right-4 z-10 flex flex-col items-end gap-2 md:top-6 md:right-6">
         <button 
@@ -187,23 +168,6 @@ export const Gallery = () => {
         </button>
       </div>
 
-      {/* Desktop Chat Input */}
-      <div className="hidden md:flex absolute bottom-24 left-1/2 -translate-x-1/2 z-10 w-full max-w-md">
-        <form onSubmit={handleSendChat} className="w-full relative">
-          <input 
-            type="text" 
-            value={chatInput}
-            onChange={e => setChatInput(e.target.value)}
-            placeholder="Nhập chat để ghim trên đầu nhân vật..."
-            className="w-full bg-black/60 border border-white/20 rounded-full px-6 py-3 text-white placeholder:text-white/50 backdrop-blur-md focus:outline-none focus:border-pink-500 shadow-xl"
-            maxLength={60}
-          />
-          <button type="submit" className="absolute right-2 top-1/2 -translate-y-1/2 bg-pink-500 hover:bg-pink-600 text-white rounded-full p-2 transition-colors">
-            <MessageSquare className="w-4 h-4" />
-          </button>
-        </form>
-      </div>
-
       <div className="hidden md:block absolute bottom-8 left-1/2 -translate-x-1/2 z-10 text-white/90 bg-black/60 px-8 py-3 rounded-full backdrop-blur-md pointer-events-none shadow-xl border border-white/10">
         Dùng phím <strong className="text-yellow-400">W A S D</strong> hoặc <strong className="text-yellow-400">Mũi Tên</strong> để di chuyển và xoay nhân vật.
       </div>
@@ -224,34 +188,6 @@ export const Gallery = () => {
           <Player />
         </Canvas>
       </KeyboardControls>
-
-      {/* Mobile Chat Button Component */}
-      <div className="md:hidden absolute bottom-4 left-1/2 -translate-x-1/2 z-[1000]">
-        {!isChatOpen ? (
-          <button 
-            onClick={() => setIsChatOpen(true)}
-            className="bg-pink-500 text-white px-5 py-2.5 rounded-full shadow-lg font-bold flex items-center gap-2 border border-pink-400 active:scale-95 transition-transform"
-          >
-            <MessageSquare className="w-4 h-4" /> Chat
-          </button>
-        ) : (
-          <form onSubmit={handleSendChat} className="flex gap-2 w-[80vw] max-w-sm animate-in fade-in slide-in-from-bottom-2">
-            <input 
-              autoFocus
-              type="text" 
-              value={chatInput}
-              onChange={e => setChatInput(e.target.value)}
-              onBlur={() => !chatInput && setIsChatOpen(false)}
-              placeholder="Nhập chat..."
-              className="flex-1 bg-black/80 border border-white/30 rounded-full px-4 py-2.5 text-white text-sm focus:outline-none focus:border-pink-500 backdrop-blur-md"
-              maxLength={60}
-            />
-            <button type="submit" className="bg-pink-500 text-white p-2.5 rounded-full shadow-lg border border-pink-400">
-               <ArrowUp className="w-5 h-5" />
-            </button>
-          </form>
-        )}
-      </div>
 
       {/* Mobile Controls (D-Pads) */}
       {isJoystickUIOpen && (
