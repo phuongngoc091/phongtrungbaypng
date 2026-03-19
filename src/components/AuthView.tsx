@@ -83,11 +83,11 @@ export const AuthView = () => {
   }
 
   return (
-    <div className="absolute inset-0 w-full overflow-y-auto overflow-x-hidden bg-slate-900 text-white scroll-smooth touch-pan-y">
+    <div className="flex-1 w-full relative bg-slate-900 text-white">
       <div className="fixed inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-20 pointer-events-none"></div>
       
-      <div className="relative min-h-[100dvh] w-full flex flex-col items-center justify-center p-6 z-10">
-        <div className="w-full max-w-md bg-slate-800/80 backdrop-blur-xl p-8 rounded-3xl border border-slate-700 shadow-2xl relative">
+      <div className="relative min-h-[100dvh] w-full flex flex-col items-center py-12 px-6 z-10">
+        <div className="w-full max-w-md bg-slate-800/80 backdrop-blur-xl p-8 rounded-3xl border border-slate-700 shadow-2xl relative my-auto">
         <button 
           onClick={() => setView('home')}
           className="absolute -top-4 -left-4 w-12 h-12 bg-slate-700 rounded-full flex items-center justify-center hover:bg-slate-600 border border-slate-600 shadow-lg transition-transform hover:scale-105"

@@ -21,7 +21,11 @@ function App() {
 
   return (
     <AuthProvider>
-      <div className="fixed inset-0 w-full h-[100dvh] bg-slate-900 text-slate-100 font-sans overflow-hidden overscroll-none">
+      <div className={`w-full font-sans bg-slate-900 text-slate-100 ${
+        view === 'gallery' 
+          ? 'fixed inset-0 h-[100dvh] overflow-hidden overscroll-none' 
+          : 'min-h-[100dvh] overflow-x-hidden flex flex-col relative'
+      }`}>
         {view === 'home' && <Home />}
         {view === 'auth' && <AuthView />}
         {view === 'teacher' && <TeacherView />}
