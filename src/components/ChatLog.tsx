@@ -58,6 +58,15 @@ export const ChatLog = ({ galleryId }: { galleryId: string }) => {
     }
   }, [galleryId])
 
+  // Timer to force re-render and remove messages older than 20s
+  const [, setTick] = useState(0)
+  useEffect(() => {
+    const timer = setInterval(() => setTick(t => t + 1), 1000)
+    return () => clearInterval(timer)
+  }, [])
+
+  const visibleMessages = messages.filter(msg => Date.now() - msg.timestamp <= 20000)
+
   // Always scroll to bottom on new messages
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -120,7 +129,7 @@ export const ChatLog = ({ galleryId }: { galleryId: string }) => {
       >
         <style dangerouslySetInnerHTML={{__html: `::-webkit-scrollbar { display: none; }`}} />
         
-        {messages.map((msg) => (
+        {visibleMessages.map((msg) => (
           <div key={msg.id} className="text-[12px] md:text-sm px-2.5 py-1.5 bg-black/40 backdrop-blur-sm rounded-lg border border-white/10 break-words shadow-sm">
             <span style={{ color: msg.color }} className="font-bold mr-2 tracking-wide drop-shadow-md">{msg.sender}:</span>
             <span className="text-white/95 font-medium drop-shadow-md">{msg.text}</span>
