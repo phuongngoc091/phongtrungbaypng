@@ -1,5 +1,5 @@
 import { useFrame } from '@react-three/fiber'
-import { useKeyboardControls, Text, Billboard } from '@react-three/drei'
+import { useKeyboardControls, Text, Billboard, Html } from '@react-three/drei'
 import { useRef, useEffect } from 'react'
 import * as THREE from 'three'
 import { useStore } from '../store/useStore'
@@ -12,7 +12,9 @@ export const MY_PLAYER_STATE = {
   x: 0,
   y: 0,
   z: 0,
-  ry: 0
+  ry: 0,
+  chatMessage: '',
+  chatTimestamp: 0
 }
 
 export const Player = () => {
@@ -21,6 +23,10 @@ export const Player = () => {
   
   const studentInfo = useStore(s => s.studentInfo)
   const cameraView = useStore(s => s.cameraView)
+  const setView = useStore(s => s.setView)
+  
+  // AFK Tracker
+  const lastMoveTime = useRef(Date.now())
   
   const pointerDelta = useRef({ x: 0, y: 0 })
   const camTilt = useRef(0)
@@ -96,6 +102,23 @@ export const Player = () => {
       camTilt.current = THREE.MathUtils.lerp(camTilt.current, 0, 0.05);
     }
     
+    // AFK Kick Check
+    const now = Date.now();
+    if (isMoving || isPointerDown.current || joystickState.camPan !== 0 || joystickState.camTilt !== 0) {
+      lastMoveTime.current = now;
+    }
+    // Check if chat updated recently
+    const storeState = useStore.getState()
+    if (storeState.chatTimestamp > lastMoveTime.current) {
+      lastMoveTime.current = storeState.chatTimestamp
+    }
+    
+    if (now - lastMoveTime.current > 30000) {
+      // 30 seconds idle kick
+      setView('home')
+      return;
+    }
+
     const direction = new THREE.Vector3(0, 0, (Number(b) - Number(f)))
     direction.applyQuaternion(playerRef.current.quaternion)
     direction.normalize().multiplyScalar(MOVE_SPEED * delta)
@@ -109,6 +132,8 @@ export const Player = () => {
     MY_PLAYER_STATE.y = playerRef.current.position.y
     MY_PLAYER_STATE.z = playerRef.current.position.z
     MY_PLAYER_STATE.ry = playerRef.current.rotation.y
+    MY_PLAYER_STATE.chatMessage = storeState.chatMessage
+    MY_PLAYER_STATE.chatTimestamp = storeState.chatTimestamp
 
     // Smooth 3rd person camera follow
     let idealCameraOffset: THREE.Vector3
@@ -162,6 +187,10 @@ export const Player = () => {
 
   const characterType = studentInfo?.characterType || 'robot'
 
+  const chatMessage = useStore(s => s.chatMessage)
+  const chatTimestamp = useStore(s => s.chatTimestamp)
+  const showChat = Date.now() - chatTimestamp < 5000 && chatMessage
+
   return (
     <group ref={playerRef} position={[0, 0, 0]}>
       {/* Floating Nickname */}
@@ -170,6 +199,16 @@ export const Player = () => {
           {studentInfo?.nickname || 'Khách'}
         </Text>
       </Billboard>
+
+      {/* Local Player Chat Bubble */}
+      {showChat && (
+        <Html position={[0, 3.2, 0]} center sprite={false} zIndexRange={[100, 0]}>
+          <div className="bg-white text-black px-4 py-2 rounded-2xl shadow-xl max-w-[200px] text-center font-medium animate-in zoom-in-50 duration-200 border-2 border-slate-200 break-words pointer-events-none text-sm">
+            {chatMessage}
+            <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-white rotate-45 border-r-2 border-b-2 border-slate-200 pointer-events-none"></div>
+          </div>
+        </Html>
+      )}
 
       {/* Render Character Model based on Type */}
       <group position={[0, 0, 0]}>

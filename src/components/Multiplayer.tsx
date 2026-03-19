@@ -6,7 +6,7 @@ import { useStore } from '../store/useStore'
 import { useAuthStore } from '../store/useAuthStore'
 import { MY_PLAYER_STATE } from './Player'
 import * as THREE from 'three'
-import { Text, Billboard } from '@react-three/drei'
+import { Text, Billboard, Html } from '@react-three/drei'
 
 interface PlayerData {
   x: number
@@ -16,6 +16,8 @@ interface PlayerData {
   nickname: string
   characterType: string
   color: string
+  chatMessage?: string
+  chatTimestamp?: number
 }
 
 export const Multiplayer = ({ galleryId }: { galleryId: string }) => {
@@ -104,6 +106,8 @@ function RemoteCharacter({ data }: { data: PlayerData }) {
 
   const characterType = data.characterType || 'robot'
   const color = data.color || '#a855f7'
+  
+  const showChat = data.chatTimestamp && (Date.now() - data.chatTimestamp < 5000) && data.chatMessage
 
   return (
     <group ref={ref} position={[data.x, data.y, data.z]}>
@@ -113,6 +117,16 @@ function RemoteCharacter({ data }: { data: PlayerData }) {
           {data.nickname}
         </Text>
       </Billboard>
+
+      {/* Remote Player Chat Bubble */}
+      {showChat && (
+        <Html position={[0, 3.2, 0]} center sprite={false} zIndexRange={[100, 0]}>
+          <div className="bg-white text-black px-4 py-2 rounded-2xl shadow-xl max-w-[200px] text-center font-medium animate-in zoom-in-50 duration-200 border-2 border-slate-200 break-words pointer-events-none text-sm">
+            {data.chatMessage}
+            <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-white rotate-45 border-r-2 border-b-2 border-slate-200 pointer-events-none"></div>
+          </div>
+        </Html>
+      )}
 
       {/* Render Character Model based on Type */}
       <group position={[0, 0, 0]}>

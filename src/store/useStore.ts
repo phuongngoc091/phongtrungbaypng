@@ -17,6 +17,8 @@ export interface AppState {
   galleryBannerImage: string | null
   cameraView: '1st' | '3rd'
   joystickState: { forward: boolean; backward: boolean; left: boolean; right: boolean; camPan: number; camTilt: number; resetLook: boolean }
+  chatMessage: string
+  chatTimestamp: number
   
   setView: (view: AppState['view']) => void
   setJoystickState: (state: Partial<{ forward: boolean; backward: boolean; left: boolean; right: boolean; camPan: number; camTilt: number; resetLook: boolean }>) => void
@@ -27,6 +29,7 @@ export interface AppState {
   setBannerText: (text: string) => void
   setBannerImage: (imageUrl: string | null) => void
   setCameraView: (view: '1st' | '3rd') => void
+  setChatMessage: (msg: string) => void
   resetGalleryState: () => void
 }
 
@@ -40,6 +43,8 @@ export const useStore = create<AppState>((set) => ({
   galleryBannerImage: null,
   cameraView: '3rd',
   joystickState: { forward: false, backward: false, left: false, right: false, camPan: 0, camTilt: 0, resetLook: false },
+  chatMessage: '',
+  chatTimestamp: 0,
   
   setView: (view) => set({ view }),
   setJoystickState: (state) => set((prev) => ({ joystickState: { ...prev.joystickState, ...state } })),
@@ -52,12 +57,15 @@ export const useStore = create<AppState>((set) => ({
   setBannerText: (text) => set({ galleryBannerText: text }),
   setBannerImage: (imageUrl) => set({ galleryBannerImage: imageUrl }),
   setCameraView: (view) => set({ cameraView: view }),
+  setChatMessage: (msg) => set({ chatMessage: msg, chatTimestamp: Date.now() }),
   resetGalleryState: () => set({
     projectName: 'Dự án của tôi',
     uploadedImages: [],
     currentTheme: 'aquarium',
     galleryBannerText: 'phuongngoc091',
     galleryBannerImage: null,
-    studentInfo: null
+    studentInfo: null,
+    chatMessage: '',
+    chatTimestamp: 0
   })
 }))
