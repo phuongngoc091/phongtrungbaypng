@@ -78,10 +78,11 @@ export const StudentSetup = () => {
   }
 
   return (
-    <div className="min-h-screen bg-slate-900 text-white p-6 md:p-12 flex flex-col items-center justify-center relative">
-      <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-20 pointer-events-none"></div>
+    <div className="absolute inset-0 w-full overflow-y-auto overflow-x-hidden bg-slate-900 text-white scroll-smooth touch-pan-y">
+      <div className="fixed inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-20 pointer-events-none"></div>
       
-      <div className="w-full max-w-2xl bg-slate-800/80 backdrop-blur-xl rounded-3xl border border-slate-700 p-8 md:p-12 shadow-2xl z-10 relative">
+      <div className="relative min-h-[100dvh] w-full flex flex-col items-center justify-center p-6 md:p-12 z-10">
+        <div className="w-full max-w-2xl bg-slate-800/80 backdrop-blur-xl rounded-3xl border border-slate-700 p-8 md:p-12 shadow-2xl relative">
         <button 
           onClick={(e) => {
             e.preventDefault()
@@ -184,6 +185,7 @@ export const StudentSetup = () => {
         
         <div className="absolute -bottom-10 left-0 w-full text-center text-slate-500 text-xs">
           © @phuongngoc091 | 0932468218
+        </div>
         </div>
       </div>
     </div>
