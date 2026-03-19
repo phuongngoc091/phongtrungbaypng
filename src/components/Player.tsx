@@ -23,6 +23,7 @@ export const Player = () => {
   const cameraView = useStore(s => s.cameraView)
   
   const pointerDelta = useRef({ x: 0, y: 0 })
+  const camTilt = useRef(0)
   const isPointerDown = useRef(false)
 
   useEffect(() => {
@@ -70,8 +71,18 @@ export const Player = () => {
     const isMoving = f || b || l || r
     
     // Tank controls setup
-    if (l) playerRef.current.rotation.y += ROTATION_SPEED * delta
-    if (r) playerRef.current.rotation.y -= ROTATION_SPEED * delta
+    if (l || joystickState.camLeft) playerRef.current.rotation.y += ROTATION_SPEED * delta
+    if (r || joystickState.camRight) playerRef.current.rotation.y -= ROTATION_SPEED * delta
+    
+    // Camera Tilt (Vertical Look)
+    if (joystickState.camUp) camTilt.current += 1.5 * delta;
+    if (joystickState.camDown) camTilt.current -= 1.5 * delta;
+    camTilt.current = Math.max(-Math.PI/3, Math.min(Math.PI/3, camTilt.current));
+    
+    // Auto-center camTilt if not actively looking up/down via joystick or pointer
+    if (!joystickState.camUp && !joystickState.camDown && !isPointerDown.current) {
+      camTilt.current = THREE.MathUtils.lerp(camTilt.current, 0, 0.05);
+    }
     
     const direction = new THREE.Vector3(0, 0, (Number(b) - Number(f)))
     direction.applyQuaternion(playerRef.current.quaternion)
@@ -94,11 +105,14 @@ export const Player = () => {
     if (cameraView === '1st') {
       idealCameraOffset = new THREE.Vector3(0, 1.8, 0)
       
-      if (isPointerDown.current) {
+      const activeTilt = isPointerDown.current ? pointerDelta.current.y : camTilt.current;
+      const activePan = isPointerDown.current ? pointerDelta.current.x : 0;
+      
+      if (isPointerDown.current || Math.abs(camTilt.current) > 0.01) {
         // Orbit looking from head
         const orbitOffset = new THREE.Vector3(0, 0, -1)
-        orbitOffset.applyAxisAngle(new THREE.Vector3(1, 0, 0), pointerDelta.current.y)
-        orbitOffset.applyAxisAngle(new THREE.Vector3(0, 1, 0), pointerDelta.current.x)
+        orbitOffset.applyAxisAngle(new THREE.Vector3(1, 0, 0), activeTilt)
+        orbitOffset.applyAxisAngle(new THREE.Vector3(0, 1, 0), activePan)
         orbitOffset.applyQuaternion(playerRef.current.quaternion)
         idealLookAt = orbitOffset.add(playerRef.current.position).add(new THREE.Vector3(0, 1.8, 0))
       } else {
@@ -110,9 +124,11 @@ export const Player = () => {
     } else {
       // 3rd Person
       idealCameraOffset = new THREE.Vector3(0, 3, 6)
-      if (isPointerDown.current) {
-        idealCameraOffset.applyAxisAngle(new THREE.Vector3(1, 0, 0), pointerDelta.current.y)
-        idealCameraOffset.applyAxisAngle(new THREE.Vector3(0, 1, 0), pointerDelta.current.x)
+      const activeTilt = isPointerDown.current ? pointerDelta.current.y : camTilt.current;
+      const activePan = isPointerDown.current ? pointerDelta.current.x : 0;
+      if (isPointerDown.current || Math.abs(camTilt.current) > 0.01) {
+        idealCameraOffset.applyAxisAngle(new THREE.Vector3(1, 0, 0), activeTilt)
+        idealCameraOffset.applyAxisAngle(new THREE.Vector3(0, 1, 0), activePan)
       }
       idealLookAt = new THREE.Vector3(0, 1.5, 0).add(playerRef.current.position)
     }

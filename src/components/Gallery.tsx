@@ -4,7 +4,7 @@ import { KeyboardControls } from '@react-three/drei'
 import { useStore } from '../store/useStore'
 import type { ThemeType } from '../store/useStore'
 import { useAuthStore } from '../store/useAuthStore'
-import { ArrowLeft, Eye, User, ArrowUp, ArrowDown, CornerUpLeft, CornerUpRight, Gamepad2 } from 'lucide-react'
+import { ArrowLeft, Eye, User, ArrowUp, ArrowDown, CornerUpLeft, CornerUpRight, Gamepad2, ArrowRight } from 'lucide-react'
 import { Player } from './Player'
 import { Room } from './Room'
 import { ArtFrames } from './ArtFrames'
@@ -126,9 +126,49 @@ export const Gallery = () => {
         <span className="font-bold text-sm hidden md:inline">{showJoystick ? 'Tắt Điều Khiển' : 'Bật Điều Khiển'}</span>
       </button>
 
-      {/* Mobile Controls (D-Pad) */}
+      {/* Mobile Controls (D-Pads) */}
       {showJoystick && (
-        <div className="fixed bottom-[100px] right-[40px] z-[999] flex flex-col items-center gap-2 animate-in slide-in-from-bottom-5">
+        <>
+          {/* Look Controls (Left) */}
+          <div className="fixed bottom-[100px] left-[40px] z-[999] flex flex-col items-center gap-2 animate-in slide-in-from-bottom-5">
+            <button
+              className="w-16 h-16 bg-black/40 backdrop-blur-md rounded-full shadow-lg border-2 border-white/50 flex justify-center items-center active:bg-white/40 touch-none select-none"
+              onPointerDown={(e) => { e.preventDefault(); setJoystickState({ camUp: true }) }}
+              onPointerUp={(e) => { e.preventDefault(); setJoystickState({ camUp: false }) }}
+              onPointerLeave={(e) => { e.preventDefault(); setJoystickState({ camUp: false }) }}
+            >
+               <ArrowUp className="w-10 h-10 text-pink-400" />
+            </button>
+            <div className="flex gap-16">
+              <button
+                className="w-16 h-16 bg-black/40 backdrop-blur-md rounded-full shadow-lg border-2 border-white/50 flex justify-center items-center active:bg-white/40 touch-none select-none"
+                onPointerDown={(e) => { e.preventDefault(); setJoystickState({ camLeft: true }) }}
+                onPointerUp={(e) => { e.preventDefault(); setJoystickState({ camLeft: false }) }}
+                onPointerLeave={(e) => { e.preventDefault(); setJoystickState({ camLeft: false }) }}
+              >
+                 <ArrowLeft className="w-10 h-10 text-pink-400" />
+              </button>
+              <button
+                className="w-16 h-16 bg-black/40 backdrop-blur-md rounded-full shadow-lg border-2 border-white/50 flex justify-center items-center active:bg-white/40 touch-none select-none"
+                onPointerDown={(e) => { e.preventDefault(); setJoystickState({ camRight: true }) }}
+                onPointerUp={(e) => { e.preventDefault(); setJoystickState({ camRight: false }) }}
+                onPointerLeave={(e) => { e.preventDefault(); setJoystickState({ camRight: false }) }}
+              >
+                 <ArrowRight className="w-10 h-10 text-pink-400" />
+              </button>
+            </div>
+            <button
+              className="w-16 h-16 bg-black/40 backdrop-blur-md rounded-full shadow-lg border-2 border-white/50 flex justify-center items-center active:bg-white/40 touch-none select-none"
+              onPointerDown={(e) => { e.preventDefault(); setJoystickState({ camDown: true }) }}
+              onPointerUp={(e) => { e.preventDefault(); setJoystickState({ camDown: false }) }}
+              onPointerLeave={(e) => { e.preventDefault(); setJoystickState({ camDown: false }) }}
+            >
+               <ArrowDown className="w-10 h-10 text-pink-400" />
+            </button>
+          </div>
+
+          {/* Movement Controls (Right) */}
+          <div className="fixed bottom-[100px] right-[40px] z-[999] flex flex-col items-center gap-2 animate-in slide-in-from-bottom-5">
           <button
             className="w-16 h-16 bg-black/40 backdrop-blur-md rounded-full shadow-lg border-2 border-white/50 flex justify-center items-center active:bg-white/40 touch-none select-none"
             onPointerDown={(e) => { e.preventDefault(); setJoystickState({ forward: true }) }}
@@ -164,6 +204,7 @@ export const Gallery = () => {
              <ArrowDown className="w-10 h-10 text-white" />
           </button>
         </div>
+        </>
       )}
     </div>
   )
