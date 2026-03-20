@@ -183,8 +183,9 @@ export const StudentSetup = () => {
           </div>
         </div>
         
-        <div className="absolute -bottom-10 left-0 w-full text-center text-slate-500 text-xs">
-          © @phuongngoc091 | 0932468218
+        <div className="absolute -bottom-10 left-0 w-full flex flex-col items-center justify-center gap-1 text-xs">
+          <p className="text-slate-300 font-medium tracking-wide">Tác giả: Phạm Phương Ngọc & Võ Thị Lệ Thu</p>
+          <p className="text-slate-500 tracking-wider uppercase text-[10px]">Trường Tiểu học Nguyễn Duy Trinh</p>
         </div>
         </div>
       </div>

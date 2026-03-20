@@ -54,8 +54,9 @@ export const ShareModal = ({ galleryCode, onClose }: ShareModalProps) => {
           </div>
         </div>
 
-        <div className="px-8 py-4 bg-slate-800/80 border-t border-slate-700 text-center text-xs text-slate-500">
-          © @phuongngoc091 | 0932468218
+        <div className="px-8 py-4 bg-slate-800/80 border-t border-slate-700 flex flex-col items-center justify-center gap-1 text-xs text-slate-500">
+          <p className="text-slate-300 font-medium tracking-wide">Tác giả: Phạm Phương Ngọc & Võ Thị Lệ Thu</p>
+          <p className="text-slate-500 tracking-wider uppercase text-[10px]">Trường Tiểu học Nguyễn Duy Trinh</p>
         </div>
       </div>
     </div>

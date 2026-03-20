@@ -141,8 +141,9 @@ export const Home = () => {
       </div>
 
       {/* Footer */}
-      <div className="w-full text-center text-slate-500/80 text-sm font-medium z-10 tracking-widest uppercase mt-8 pb-4">
-        © @phuongngoc091 | 0932468218
+      <div className="w-full flex flex-col items-center justify-center gap-1 mt-8 pb-6 z-10 text-sm">
+        <p className="text-slate-300 font-medium tracking-wide">Tác giả: Phạm Phương Ngọc & Võ Thị Lệ Thu</p>
+        <p className="text-slate-500 tracking-wider uppercase text-xs">Trường Tiểu học Nguyễn Duy Trinh</p>
       </div>
     </div>
   )

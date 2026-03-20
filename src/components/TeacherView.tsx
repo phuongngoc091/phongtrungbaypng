@@ -588,8 +588,9 @@ export const TeacherView = () => {
 
           </div>
 
-          <div className="mt-auto pt-8 text-center text-slate-500 text-sm pb-4">
-            © @phuongngoc091 | 0932468218
+          <div className="mt-auto pt-8 flex flex-col items-center justify-center gap-1 text-sm pb-4">
+            <p className="text-slate-300 font-medium tracking-wide">Tác giả: Phạm Phương Ngọc & Võ Thị Lệ Thu</p>
+            <p className="text-slate-500 tracking-wider uppercase text-xs">Trường Tiểu học Nguyễn Duy Trinh</p>
           </div>
         </div>
       </div>
