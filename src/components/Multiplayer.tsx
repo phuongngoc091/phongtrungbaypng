@@ -26,8 +26,12 @@ export const Multiplayer = ({ galleryId }: { galleryId: string }) => {
   const profile = useAuthStore(s => s.profile)
   const [players, setPlayers] = useState<Record<string, PlayerData>>({})
   
-  // Decide my unique ID ONCE per mount to avoid disconnect loops on render
-  const [myId] = useState(() => profile?.uid || `guest_${Math.random().toString(36).substring(7)}`)
+  // Decide my unique ID ONCE per mount to avoid disconnect loops on render.
+  // Always append a random string so same-account multiple tabs don't overwrite each other
+  const [myId] = useState(() => {
+    const baseId = profile?.uid || 'guest'
+    return `${baseId}_${Math.random().toString(36).substring(7)}`
+  })
   
   const lastSync = useRef(0)
 
