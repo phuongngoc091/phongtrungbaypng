@@ -98,12 +98,23 @@ export const Multiplayer = ({ galleryId }: { galleryId: string }) => {
 
 function RemoteCharacter({ data }: { data: PlayerData }) {
   const ref = useRef<THREE.Group>(null)
+  const lastActiveLocal = useRef(Date.now())
+
+  useEffect(() => {
+    // Whenever Firebase provides a new update for this player, record the LOCAL time
+    // This perfectly bypasses the cross-device clock skew bug while still allowing ghost cleanup
+    lastActiveLocal.current = Date.now()
+  }, [data])
   
   useFrame(() => {
     if (!ref.current) return
     
-    // Bỏ check xoá player vì firebase onDisconnect sẽ lo việc disconnect.
-    ref.current.visible = true;
+    // Track 15s timeout locally (clock-drift proof)
+    if (Date.now() - lastActiveLocal.current > 15000) {
+      ref.current.visible = false
+    } else {
+      ref.current.visible = true
+    }
     
     // Smooth interpolation (lerp) towards the target network position
     ref.current.position.lerp(new THREE.Vector3(data.x, data.y, data.z), 0.2)

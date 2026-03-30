@@ -21,6 +21,12 @@ export const Player = () => {
   const [, getKeys] = useKeyboardControls()
   const playerRef = useRef<THREE.Group>(null)
   
+  // Randomize initial spawn position slightly to prevent Z-fighting flickering
+  const startOffset = useRef({
+    x: (Math.random() - 0.5) * 4,
+    z: (Math.random() - 0.5) * 4,
+  })
+  
   const studentInfo = useStore(s => s.studentInfo)
   const cameraView = useStore(s => s.cameraView)
   const setView = useStore(s => s.setView)
@@ -197,7 +203,7 @@ export const Player = () => {
   const showChat = Date.now() - chatTimestamp < 5000 && chatMessage
 
   return (
-    <group ref={playerRef} position={[0, 0, 0]}>
+    <group ref={playerRef} position={[startOffset.current.x, 0, startOffset.current.z]}>
       {/* Floating Nickname */}
       <Billboard position={[0, 2.5, 0]} follow={true} lockX={false} lockY={false} lockZ={false}>
         <Text fontSize={0.4} color="white" outlineColor="black" outlineWidth={0.02} anchorX="center" anchorY="bottom">
