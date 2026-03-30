@@ -86,28 +86,21 @@ export const Multiplayer = ({ galleryId }: { galleryId: string }) => {
   return (
     <group>
       {Object.entries(players).map(([id, p]) => (
-        <RemoteCharacter key={id} id={id} galleryId={galleryId} data={p} />
+        <RemoteCharacter key={id} data={p} />
       ))}
     </group>
   )
 }
 
-function RemoteCharacter({ id, galleryId, data }: { id: string, galleryId: string, data: PlayerData }) {
+function RemoteCharacter({ data }: { data: PlayerData }) {
   const ref = useRef<THREE.Group>(null)
   
   useFrame(() => {
     if (!ref.current) return
     
-    // Ghost cleanup: if player is inactive for > 15 seconds, hide them and remove from DB
-    if (data.lastActive && Date.now() - data.lastActive > 15000) {
-      ref.current.visible = false
-      // Clean up zombie nodes in RTDB to prevent DB growth
-      set(refDb(rtdb, `rooms/${galleryId}/players/${id}`), null).catch(() => {})
-      return
-    } else {
-      ref.current.visible = true
-    }
-
+    // Bỏ check xoá player vì firebase onDisconnect sẽ lo việc disconnect.
+    ref.current.visible = true;
+    
     // Smooth interpolation (lerp) towards the target network position
     ref.current.position.lerp(new THREE.Vector3(data.x, data.y, data.z), 0.2)
     

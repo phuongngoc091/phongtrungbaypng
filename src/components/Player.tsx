@@ -27,6 +27,7 @@ export const Player = () => {
   
   // AFK Tracker
   const lastMoveTime = useRef(Date.now())
+  const hasAlertedAfk = useRef(false)
   
   const pointerDelta = useRef({ x: 0, y: 0 })
   const camTilt = useRef(0)
@@ -113,9 +114,13 @@ export const Player = () => {
       lastMoveTime.current = storeState.chatTimestamp
     }
     
-    if (now - lastMoveTime.current > 30000) {
-      // 30 seconds idle kick
-      setView('home')
+    if (now - lastMoveTime.current > 60000) {
+      // 60 seconds idle kick
+      if (!hasAlertedAfk.current) {
+        hasAlertedAfk.current = true;
+        window.alert("Bạn đã đứng yên quá lâu (1 phút). Nhấn OK để thoát.");
+        setView('home');
+      }
       return;
     }
 
