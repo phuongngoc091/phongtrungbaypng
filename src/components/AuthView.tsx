@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { auth, db } from '../utils/firebase'
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth'
-import { doc, setDoc, collection, getDocs } from 'firebase/firestore'
+import { doc, setDoc, collection, getDocs, getDoc } from 'firebase/firestore'
 import { useStore } from '../store/useStore'
 import { useAuthStore } from '../store/useAuthStore'
 import type { UserRole } from '../store/useAuthStore'
@@ -57,7 +57,19 @@ export const AuthView = () => {
 
     try {
       if (isLogin) {
-        await signInWithEmailAndPassword(auth, email, password)
+        const userCredential = await signInWithEmailAndPassword(auth, email, password)
+        const userRef = doc(db, 'users', userCredential.user.uid)
+        const snap = await getDoc(userRef)
+        if (!snap.exists()) {
+          await setDoc(userRef, {
+            uid: userCredential.user.uid,
+            email: userCredential.user.email,
+            displayName: userCredential.user.email?.split('@')[0] || 'User',
+            phone: '',
+            role: 'admin',
+            createdAt: Date.now()
+          })
+        }
       } else {
         if (password !== confirmPassword) {
           throw new Error('Mật khẩu xác nhận không khớp!')
