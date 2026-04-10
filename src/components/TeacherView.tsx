@@ -27,7 +27,7 @@ const themes: { id: ThemeType; name: string; icon: string; desc: string; colors:
 
 export const TeacherView = () => {
   const { setView, uploadedImages, addUploadedImage, currentTheme, setCurrentTheme, galleryBannerText, setBannerText, galleryBannerImage, setBannerImage, projectName, setProjectName, resetGalleryState } = useStore()
-  const { profile, logout } = useAuthStore()
+  const { profile, isLoading, logout } = useAuthStore()
   const fileInputRef = useRef<HTMLInputElement>(null)
   const bannerInputRef = useRef<HTMLInputElement>(null)
   
@@ -38,15 +38,18 @@ export const TeacherView = () => {
   const [showThemeMenu, setShowThemeMenu] = useState(false)
   
   useEffect(() => {
-    if (!profile) {
+    if (!profile && !isLoading) {
       setView('auth')
       return
     }
-    fetchSavedProjects()
-  }, [profile]) // eslint-disable-line
+    if (profile) {
+      fetchSavedProjects()
+    }
+  }, [profile, isLoading]) // eslint-disable-line
 
   const [savedProjects, setSavedProjects] = useState<any[]>([])
 
+  if (isLoading) return <div className="flex-1 bg-slate-900 text-white flex items-center justify-center">Đang tải...</div>
   if (!profile) return null
 
   const isVip = profile.role === 'vip' || profile.role === 'admin'

@@ -23,9 +23,24 @@ export const Home = () => {
         if (!snap.empty) {
           const doc = snap.docs[0]
           setDemoProject({ id: doc.id, ...doc.data() })
+        } else {
+          setDemoProject({
+            id: 'DEMO',
+            projectName: 'Phòng Trưng Bày Mẫu',
+            bannerImage: null,
+            images: [],
+            isAdmin: true
+          })
         }
       } catch (err) {
          console.warn("Could not load demo project", err);
+         setDemoProject({
+            id: 'DEMO',
+            projectName: 'Phòng Trưng Bày Mẫu',
+            bannerImage: null,
+            images: [],
+            isAdmin: true
+         })
       }
     }
     fetchDemo()

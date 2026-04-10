@@ -1,14 +1,16 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { auth, db } from '../utils/firebase'
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth'
 import { doc, setDoc, collection, getDocs } from 'firebase/firestore'
 import { useStore } from '../store/useStore'
+import { useAuthStore } from '../store/useAuthStore'
 import type { UserRole } from '../store/useAuthStore'
 import { ArrowLeft } from 'lucide-react'
 import Swal from 'sweetalert2'
 
 export const AuthView = () => {
   const { setView } = useStore()
+  const { profile } = useAuthStore()
   const [isLogin, setIsLogin] = useState(true)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -21,6 +23,12 @@ export const AuthView = () => {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
+  useEffect(() => {
+    if (profile) {
+      setView('teacher')
+    }
+  }, [profile, setView])
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
@@ -29,7 +37,6 @@ export const AuthView = () => {
     try {
       if (isLogin) {
         await signInWithEmailAndPassword(auth, email, password)
-        setView('teacher')
       } else {
         if (password !== confirmPassword) {
           throw new Error('Mật khẩu xác nhận không khớp!')
@@ -64,8 +71,6 @@ export const AuthView = () => {
         })
         
         Swal.fire({ title: 'Thành công', text: 'Đăng ký thành công!', icon: 'success', toast: true, position: 'top-end', timer: 3000, showConfirmButton: false })
-        setIsLogin(true) // Switch to login screen after register or just proceed to teacher view
-        // setView('teacher')
       }
     } catch (err: any) {
       console.error("Auth Error:", err)
