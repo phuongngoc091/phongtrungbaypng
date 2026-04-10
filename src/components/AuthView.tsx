@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { auth, db } from '../utils/firebase'
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth'
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth'
 import { doc, setDoc, collection, getDocs } from 'firebase/firestore'
 import { useStore } from '../store/useStore'
 import { useAuthStore } from '../store/useAuthStore'
@@ -28,6 +28,27 @@ export const AuthView = () => {
       setView('teacher')
     }
   }, [profile, setView])
+
+  const handleForgotPassword = async () => {
+    if (!email.trim()) {
+      Swal.fire('Thông báo', 'Vui lòng điền Email của bạn vào ô bên trên rồi nhấn nút này nhé!', 'warning')
+      return
+    }
+    try {
+      setLoading(true)
+      await sendPasswordResetEmail(auth, email)
+      Swal.fire('Thành công', 'Đã gửi liên kết đăt lại mật khẩu! Vui lòng kiểm tra hộp thư email của bạn (bao gồm cả thư mục rác/spam).', 'success')
+    } catch (err: any) {
+      console.error(err)
+      if (err.code === 'auth/user-not-found') {
+        Swal.fire('Lỗi', 'Không tìm thấy tài khoản nào với email này.', 'error')
+      } else {
+        Swal.fire('Lỗi', 'Bạn thử lại sau nhé, hoặc kiểm tra lại email xem đúng chưa.', 'error')
+      }
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -145,6 +166,18 @@ export const AuthView = () => {
               placeholder="••••••••"
             />
           </div>
+
+          {isLogin && (
+            <div className="flex justify-end mt-2">
+              <button 
+                type="button" 
+                onClick={handleForgotPassword}
+                className="text-sm font-medium text-pink-400 hover:text-pink-300 transition-colors"
+              >
+                Tạo / Khôi phục mật khẩu mới?
+              </button>
+            </div>
+          )}
 
           {!isLogin && (
             <div>
