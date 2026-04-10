@@ -26,6 +26,7 @@ export const ChatLog = ({ galleryId }: { galleryId: string }) => {
   const chatTimestamp = useStore(s => s.chatTimestamp)
 
   const fadeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
 
   // Listen to the last 20 messages
   useEffect(() => {
@@ -85,6 +86,20 @@ export const ChatLog = ({ galleryId }: { galleryId: string }) => {
     }
   }, [isHovered])
 
+  // Global hotkey to focus chat input on Enter
+  useEffect(() => {
+    const handleGlobalKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Enter') {
+        if (document.activeElement !== inputRef.current) {
+          e.preventDefault()
+          inputRef.current?.focus()
+        }
+      }
+    }
+    window.addEventListener('keydown', handleGlobalKeyDown)
+    return () => window.removeEventListener('keydown', handleGlobalKeyDown)
+  }, [])
+
   const handleSendChat = (e: React.FormEvent) => {
     e.preventDefault()
     if (!chatInput.trim()) return
@@ -139,8 +154,9 @@ export const ChatLog = ({ galleryId }: { galleryId: string }) => {
       </div>
 
       {/* Input Form */}
-      <form onSubmit={handleSendChat} className={`fixed bottom-6 left-1/2 -translate-x-1/2 w-[60vw] max-w-[280px] md:max-w-none md:static md:translate-x-0 md:w-full flex gap-2 mt-1 z-50 ${isFaded && !isHovered ? 'pointer-events-none' : ''}`}>
-        <input 
+      <form onSubmit={handleSendChat} className={`fixed bottom-6 left-1/2 -translate-x-1/2 w-[60vw] max-w-[280px] md:max-w-none md:static md:translate-x-0 md:w-full flex gap-2 mt-1 z-50`}>
+        <input  
+          ref={inputRef}
           type="text" 
           value={chatInput}
           onChange={e => setChatInput(e.target.value)}
@@ -149,6 +165,13 @@ export const ChatLog = ({ galleryId }: { galleryId: string }) => {
           placeholder="Nhập tin nhắn..."
           className="flex-1 bg-black/60 border border-white/20 rounded-full px-4 py-2 text-white text-[13px] md:text-sm focus:outline-none focus:border-pink-500 backdrop-blur-md shadow-lg"
           maxLength={60}
+          onKeyDown={(e) => {
+            e.stopPropagation()
+            e.nativeEvent.stopPropagation()
+            if (e.key === 'Escape') {
+              inputRef.current?.blur()
+            }
+          }}
         />
         <button type="submit" className="bg-pink-500 hover:bg-pink-600 text-white p-2 rounded-full shadow-lg border border-pink-400 transition-colors shrink-0">
            <ArrowUp className="w-4 h-4 md:w-5 md:h-5" />
