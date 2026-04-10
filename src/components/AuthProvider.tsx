@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { auth, db } from '../utils/firebase'
 import { onAuthStateChanged } from 'firebase/auth'
-import { doc, getDoc, onSnapshot } from 'firebase/firestore'
+import { doc, onSnapshot } from 'firebase/firestore'
 import { useAuthStore } from '../store/useAuthStore'
 import type { UserProfile } from '../store/useAuthStore'
 
