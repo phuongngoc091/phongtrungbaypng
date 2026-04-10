@@ -4,7 +4,8 @@ import { KeyboardControls } from '@react-three/drei'
 import { useStore } from '../store/useStore'
 import type { ThemeType } from '../store/useStore'
 import { useAuthStore } from '../store/useAuthStore'
-import { ArrowLeft, Eye, User, ArrowUp, ArrowDown, CornerUpLeft, CornerUpRight, Gamepad2 } from 'lucide-react'
+import { ArrowLeft, Eye, User, ArrowUp, ArrowDown, CornerUpLeft, CornerUpRight, Gamepad2, LogOut } from 'lucide-react'
+import Swal from 'sweetalert2'
 import { Player } from './Player'
 import { Room } from './Room'
 import { ArtFrames } from './ArtFrames'
@@ -107,15 +108,38 @@ export const Gallery = () => {
   
   const theme = themeSettings[currentTheme]
 
-  const handleBack = () => {
-    // If studentInfo is present, they joined as a student, so go home.
-    // If no studentInfo, they must be a teacher previewing, so go to teacher.
-    if (studentInfo) {
-      setView('home')
-    } else if (profile) {
-      setView('teacher')
-    } else {
-      setView('home')
+  const handleBack = async () => {
+    const isTeacherPreview = !studentInfo && profile;
+    
+    const result = await Swal.fire({
+      title: 'Xác nhận thoát',
+      text: isTeacherPreview ? "Bạn muốn kết thúc việc tham quan mô phỏng và quay lại Góc Quản Lý?" : "Bạn có chắc chắn muốn rời khỏi phòng trưng bày không?",
+      imageUrl: 'https://cdn-icons-png.flaticon.com/512/9133/9133031.png',
+      imageWidth: 80,
+      imageHeight: 80,
+      showCancelButton: true,
+      confirmButtonColor: '#ec4899',
+      cancelButtonColor: '#64748b',
+      confirmButtonText: 'Đồng Ý Thoát',
+      cancelButtonText: 'Ở Lại',
+      background: '#1e293b',
+      color: '#f8fafc',
+      customClass: {
+        popup: 'border border-slate-700 rounded-3xl',
+        title: 'text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-pink-400 to-purple-400',
+        confirmButton: 'font-bold rounded-xl px-6 py-3',
+        cancelButton: 'font-bold rounded-xl px-6 py-3'
+      }
+    });
+
+    if (result.isConfirmed) {
+      if (studentInfo) {
+        setView('home')
+      } else if (profile) {
+        setView('teacher')
+      } else {
+        setView('home')
+      }
     }
   }
 
@@ -125,9 +149,11 @@ export const Gallery = () => {
       <div className="absolute top-4 left-4 z-10 flex gap-2 md:gap-4 md:top-6 md:left-6">
         <button 
           onClick={handleBack}
-          className="p-2 md:p-3 bg-black/40 backdrop-blur-md rounded-full hover:bg-black/60 transition-colors text-white border border-white/20 shadow-lg flex-shrink-0"
+          className="px-3 py-2 md:px-4 md:py-3 bg-red-500/80 hover:bg-red-500 backdrop-blur-md rounded-xl transition-colors text-white border border-red-400 shadow-[0_0_15px_rgba(239,68,68,0.3)] flex items-center gap-2 flex-shrink-0"
+          title="Thoát khỏi phòng"
         >
-          <ArrowLeft className="w-5 h-5 md:w-6 md:h-6" />
+          <LogOut className="w-4 h-4 md:w-5 md:h-5" />
+          <span className="hidden sm:inline font-bold text-sm md:text-base">Thoát</span>
         </button>
         {studentInfo && (
           <div className="px-3 md:px-6 py-2 md:py-3 bg-black/40 backdrop-blur-md rounded-full text-white border border-white/20 flex flex-wrap items-center gap-2 md:gap-3 shadow-lg">

@@ -2,6 +2,7 @@ import { useFrame } from '@react-three/fiber'
 import { useKeyboardControls, Text, Billboard, Html } from '@react-three/drei'
 import { useRef, useEffect } from 'react'
 import * as THREE from 'three'
+import Swal from 'sweetalert2'
 import { useStore } from '../store/useStore'
 
 const MOVE_SPEED = 6.0
@@ -124,8 +125,27 @@ export const Player = () => {
       // 60 seconds idle kick
       if (!hasAlertedAfk.current) {
         hasAlertedAfk.current = true;
-        window.alert("Bạn đã đứng yên quá lâu (1 phút). Nhấn OK để thoát.");
-        setView('home');
+        Swal.fire({
+          title: 'Tạm Biệt!',
+          text: 'Bạn đã đứng lặng thinh quá lâu (hơn 1 phút). Mình nhường vị trí cho các bạn khác vào tham quan nhé! Màn hình sẽ tự động thoát sau 5 giây...',
+          imageUrl: 'https://cdn-icons-png.flaticon.com/512/9133/9133024.png',
+          imageWidth: 80,
+          imageHeight: 80,
+          timer: 6000,
+          timerProgressBar: true,
+          showConfirmButton: true,
+          confirmButtonText: 'Thoát Ngay',
+          background: '#1e293b',
+          color: '#f8fafc',
+          confirmButtonColor: '#ec4899',
+          customClass: {
+            popup: 'border border-slate-700 rounded-3xl',
+            title: 'text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-pink-400 to-purple-400',
+            confirmButton: 'font-bold rounded-xl px-8 py-3'
+          }
+        }).then(() => {
+          setView('home')
+        })
       }
       return;
     }

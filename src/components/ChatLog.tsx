@@ -139,7 +139,7 @@ export const ChatLog = ({ galleryId }: { galleryId: string }) => {
     >
       {/* Messages Window */}
       <div 
-        className="flex flex-col max-h-[25vh] md:max-h-[35vh] overflow-y-auto pr-2 gap-1"
+        className="flex flex-col items-start max-h-[25vh] md:max-h-[35vh] overflow-y-auto pr-2 gap-1"
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
         <style dangerouslySetInnerHTML={{__html: `::-webkit-scrollbar { display: none; }`}} />
