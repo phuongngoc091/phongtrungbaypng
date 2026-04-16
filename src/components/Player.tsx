@@ -4,6 +4,7 @@ import { useRef, useEffect } from 'react'
 import * as THREE from 'three'
 import Swal from 'sweetalert2'
 import { useStore } from '../store/useStore'
+import { useAuthStore } from '../store/useAuthStore'
 
 const MOVE_SPEED = 6.0
 const ROTATION_SPEED = 3.0
@@ -31,6 +32,8 @@ export const Player = () => {
   const studentInfo = useStore(s => s.studentInfo)
   const cameraView = useStore(s => s.cameraView)
   const setView = useStore(s => s.setView)
+  const profile = useAuthStore(s => s.profile)
+  const isPrivileged = profile?.role === 'admin' || profile?.role === 'vip'
   
   // AFK Tracker
   const lastMoveTime = useRef(Date.now())
@@ -121,7 +124,8 @@ export const Player = () => {
       lastMoveTime.current = storeState.chatTimestamp
     }
     
-    if (now - lastMoveTime.current > 60000) {
+    // Admins and VIPs are never kicked for being AFK
+    if (!isPrivileged && now - lastMoveTime.current > 60000) {
       // 60 seconds idle kick
       if (!hasAlertedAfk.current) {
         hasAlertedAfk.current = true;

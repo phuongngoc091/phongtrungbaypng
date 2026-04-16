@@ -101,10 +101,10 @@ function RemoteCharacter({ data }: { data: PlayerData }) {
   const lastActiveLocal = useRef(Date.now())
 
   useEffect(() => {
-    // Whenever Firebase provides a new update for this player, record the LOCAL time
+    // Whenever Firebase provides a new update for this specific player's activity
     // This perfectly bypasses the cross-device clock skew bug while still allowing ghost cleanup
     lastActiveLocal.current = Date.now()
-  }, [data])
+  }, [data.lastActive])
   
   useFrame(() => {
     if (!ref.current) return

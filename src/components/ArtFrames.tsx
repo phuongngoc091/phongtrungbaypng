@@ -1,5 +1,5 @@
 import { useStore } from '../store/useStore'
-import { useTexture, Text } from '@react-three/drei'
+import { useTexture, Text, Html } from '@react-three/drei'
 import * as THREE from 'three'
 import { Suspense } from 'react'
 
@@ -135,28 +135,18 @@ function Frame({ src, title, position, rotation, frameColor }: {
 
       {/* Title Panel */}
       {title && (
-        <group position={[0, -height / 2 - 0.7, 0.1]}>
-          <mesh position={[0, 0, 0]}>
-            <planeGeometry args={[Math.min(width, 6) + 0.5, 0.7]} />
-            <meshStandardMaterial color="#222" />
-          </mesh>
-          <mesh position={[0, 0, -0.05]}>
-            <planeGeometry args={[Math.min(width, 6) + 0.6, 0.8]} />
-            <meshStandardMaterial color={frameColor} />
-          </mesh>
-          <Text
-            position={[0, 0, 0.05]}
-            fontSize={0.28}
-            color="white"
-            anchorX="center"
-            anchorY="middle"
-            maxWidth={Math.min(width, 6) + 0.3}
-            textAlign="center"
-            font="https://fonts.gstatic.com/s/roboto/v30/KFOmCnqEu92Fr1Me5WZLCzYlKw.ttf"
-          >
-            {title}
-          </Text>
-        </group>
+        <Html 
+          transform 
+          center 
+          position={[0, -height / 2 - 0.7, 0.05]} 
+          zIndexRange={[10, 0]}
+        >
+          <div className="bg-slate-900/90 text-slate-100 px-4 py-2 rounded-xl border-2 shadow-2xl flex flex-col items-center justify-center max-w-[350px]" style={{ borderColor: frameColor }}>
+            <p className="text-xl font-bold whitespace-pre-wrap break-words text-center font-sans tracking-wide leading-snug">
+               {title}
+            </p>
+          </div>
+        </Html>
       )}
     </group>
   )

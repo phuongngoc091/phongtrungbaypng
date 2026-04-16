@@ -513,13 +513,12 @@ export const TeacherView = () => {
                               <div className="aspect-square bg-slate-900 rounded-xl overflow-hidden border border-slate-700 relative w-full h-auto mt-1">
                                 <img src={image.src} alt={`Upload ${index+1}`} className="w-full h-full object-cover" />
                               </div>
-                              <input 
-                                type="text" 
+                              <textarea 
                                 value={image.title || ''}
                                 onChange={(e) => updateImageTitle(index, e.target.value)}
-                                placeholder="Nhập tiêu đề (tối đa 30 ký tự)"
-                                maxLength={30}
-                                className="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-pink-500 focus:ring-1 focus:ring-pink-500 w-full font-medium text-slate-200 placeholder-slate-500 transition-all shadow-inner"
+                                placeholder="Nhập tiêu đề tranh..."
+                                rows={2}
+                                className="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-pink-500 focus:ring-1 focus:ring-pink-500 w-full font-medium text-slate-200 placeholder-slate-500 transition-all shadow-inner resize-none"
                               />
                             </>
                           ) : (
