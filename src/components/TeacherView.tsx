@@ -26,7 +26,7 @@ const themes: { id: ThemeType; name: string; icon: string; desc: string; colors:
 ]
 
 export const TeacherView = () => {
-  const { setView, uploadedImages, addUploadedImage, currentTheme, setCurrentTheme, galleryBannerText, setBannerText, galleryBannerImage, setBannerImage, projectName, setProjectName, resetGalleryState } = useStore()
+  const { setView, uploadedImages, addUploadedImage, updateImageTitle, removeImage, currentTheme, setCurrentTheme, galleryBannerText, setBannerText, galleryBannerImage, setBannerImage, projectName, setProjectName, resetGalleryState } = useStore()
   const { profile, isLoading, logout } = useAuthStore()
   const fileInputRef = useRef<HTMLInputElement>(null)
   const bannerInputRef = useRef<HTMLInputElement>(null)
@@ -53,7 +53,7 @@ export const TeacherView = () => {
   if (!profile) return null
 
   const isVip = profile.role === 'vip' || profile.role === 'admin'
-  const maxImages = isVip ? 15 : 3
+  const maxImages = isVip ? 20 : 3
 
   const fetchSavedProjects = async () => {
     try {
@@ -484,48 +484,63 @@ export const TeacherView = () => {
                   </div>
                 </div>
 
-                {/* Upload Area - Made Smaller */}
-                <div 
-                  className={`border-2 border-dashed rounded-xl p-4 mb-4 flex flex-row items-center justify-center gap-4 transition-colors group ${
-                    uploadedImages.length >= maxImages 
-                      ? 'border-slate-700 bg-slate-900/50 opacity-50 cursor-not-allowed' 
-                      : 'border-slate-600 bg-slate-800/30 hover:bg-slate-800/50 hover:border-pink-400 cursor-pointer'
-                  }`}
-                  onClick={() => uploadedImages.length < maxImages && fileInputRef.current?.click()}
-                >
-                  <input 
-                    type="file" ref={fileInputRef} className="hidden" multiple accept="image/*"
-                    onChange={handleImageUpload} disabled={uploadedImages.length >= maxImages}
-                  />
-                  <div className={`w-12 h-12 rounded-full flex items-center justify-center transition-colors ${
-                    uploadedImages.length >= maxImages ? 'bg-slate-800' : 'bg-slate-700 group-hover:bg-pink-500/20'
-                  }`}>
-                    <Upload className={`w-6 h-6 ${uploadedImages.length >= maxImages ? 'text-slate-600' : 'text-slate-300 group-hover:text-pink-400'}`} />
-                  </div>
-                  <div className="text-left">
-                    <h3 className="text-lg font-medium text-slate-200 mb-0">
-                      {uploadedImages.length >= maxImages ? 'Đã đạt giới hạn tranh' : 'Nhấn để tải tranh lên'}
-                    </h3>
-                    <p className="text-slate-400 text-sm">Hỗ trợ JPG, PNG, WEBP</p>
-                  </div>
-                </div>
+                {/* Hidden input for file upload */}
+                <input 
+                  type="file" ref={fileInputRef} className="hidden" multiple accept="image/*"
+                  onChange={handleImageUpload} disabled={uploadedImages.length >= maxImages}
+                />
 
-                {/* Image Grid */}
-                <div className="flex-1 overflow-y-auto pr-2 pb-4 pt-2 custom-scrollbar min-h-[300px]">
-                  {uploadedImages.length === 0 ? (
-                    <div className="h-full flex flex-col items-center justify-center text-slate-500 py-10">
-                      <ImageIcon className="w-16 h-16 mb-4 opacity-30" />
-                      <p>Chưa có bức tranh nào được tải lên</p>
-                    </div>
-                  ) : (
-                    <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-4">
-                      {uploadedImages.map((src, index) => (
-                        <div key={index} className="relative aspect-square rounded-xl overflow-hidden group bg-slate-800 border border-slate-700">
-                           <img src={src} alt="Uploaded" className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                {/* Slots Grid */}
+                <div className="flex-1 overflow-y-auto pr-2 pb-4 pt-2 custom-scrollbar min-h-[400px]">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-5">
+                    {Array.from({ length: maxImages }).map((_, index) => {
+                      const image = uploadedImages[index]
+                      return (
+                        <div key={index} className="bg-slate-800/80 p-3 rounded-2xl border border-slate-700 flex flex-col gap-3 relative group hover:border-slate-500 transition-colors shadow-lg">
+                          <div className="absolute top-2 left-2 bg-slate-900/90 backdrop-blur-md border border-slate-600 rounded px-2 py-0.5 text-xs font-bold z-10 text-slate-300 shadow-sm pointer-events-none">
+                            STT: {index + 1}
+                          </div>
+                          
+                          {image ? (
+                            <>
+                              <button 
+                                onClick={() => removeImage(index)}
+                                className="absolute top-2 right-2 bg-red-500/90 backdrop-blur hover:bg-red-500 text-white p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-all z-10 shadow-lg scale-90 hover:scale-100"
+                                title="Xóa ảnh"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                              <div className="aspect-square bg-slate-900 rounded-xl overflow-hidden border border-slate-700 relative w-full h-auto mt-1">
+                                <img src={image.src} alt={`Upload ${index+1}`} className="w-full h-full object-cover" />
+                              </div>
+                              <input 
+                                type="text" 
+                                value={image.title || ''}
+                                onChange={(e) => updateImageTitle(index, e.target.value)}
+                                placeholder="Nhập tiêu đề (tối đa 30 ký tự)"
+                                maxLength={30}
+                                className="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-pink-500 focus:ring-1 focus:ring-pink-500 w-full font-medium text-slate-200 placeholder-slate-500 transition-all shadow-inner"
+                              />
+                            </>
+                          ) : (
+                            <div 
+                              className={`aspect-square mt-1 border-2 border-dashed rounded-xl flex flex-col items-center justify-center transition-all ${
+                                index === uploadedImages.length 
+                                  ? 'border-pink-500/50 bg-pink-500/5 hover:bg-pink-500/10 hover:border-pink-400 cursor-pointer' 
+                                  : 'border-slate-700 bg-slate-900/30 opacity-50 cursor-not-allowed'
+                              }`}
+                              onClick={() => index === uploadedImages.length && fileInputRef.current?.click()}
+                            >
+                              <Upload className={`w-8 h-8 mb-2 ${index === uploadedImages.length ? 'text-pink-400' : 'text-slate-600'}`} />
+                              <span className={`text-sm font-medium ${index === uploadedImages.length ? 'text-slate-300' : 'text-slate-500'}`}>
+                                {index === uploadedImages.length ? 'Tải ảnh lên' : 'Chưa có ảnh'}
+                              </span>
+                            </div>
+                          )}
                         </div>
-                      ))}
-                    </div>
-                  )}
+                      )
+                    })}
+                  </div>
                 </div>
 
                 {/* Sticky Action Footer inside the right column */}

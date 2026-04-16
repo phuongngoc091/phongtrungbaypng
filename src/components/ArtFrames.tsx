@@ -74,10 +74,11 @@ export const ArtFrames = () => {
       </Suspense>
 
       {/* Paintings */}
-      {uploadedImages.map((src, index) => (
+      {uploadedImages.map((img, index) => (
         <Frame 
           key={index} 
-          src={src} 
+          src={img.src} 
+          title={img.title}
           position={positions[index].pos} 
           rotation={positions[index].rot}
           frameColor={frameColor} 
@@ -97,8 +98,9 @@ function BannerImage({ src }: { src: string }) {
   )
 }
 
-function Frame({ src, position, rotation, frameColor }: { 
+function Frame({ src, title, position, rotation, frameColor }: { 
   src: string; 
+  title?: string;
   position: [number, number, number]; 
   rotation: [number, number, number];
   frameColor: string 
@@ -130,6 +132,32 @@ function Frame({ src, position, rotation, frameColor }: {
         <planeGeometry args={[width, height]} />
         <meshBasicMaterial map={texture} side={THREE.DoubleSide} />
       </mesh>
+
+      {/* Title Panel */}
+      {title && (
+        <group position={[0, -height / 2 - 0.7, 0.1]}>
+          <mesh position={[0, 0, 0]}>
+            <planeGeometry args={[Math.min(width, 6) + 0.5, 0.7]} />
+            <meshStandardMaterial color="#222" />
+          </mesh>
+          <mesh position={[0, 0, -0.05]}>
+            <planeGeometry args={[Math.min(width, 6) + 0.6, 0.8]} />
+            <meshStandardMaterial color={frameColor} />
+          </mesh>
+          <Text
+            position={[0, 0, 0.05]}
+            fontSize={0.28}
+            color="white"
+            anchorX="center"
+            anchorY="middle"
+            maxWidth={Math.min(width, 6) + 0.3}
+            textAlign="center"
+            font="https://fonts.gstatic.com/s/roboto/v30/KFOmCnqEu92Fr1Me5WZLCzYlKw.ttf"
+          >
+            {title}
+          </Text>
+        </group>
+      )}
     </group>
   )
 }

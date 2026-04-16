@@ -7,10 +7,15 @@ export interface StudentInfo {
   nickname: string
 }
 
+export interface GalleryImage {
+  src: string;
+  title: string;
+}
+
 export interface AppState {
   view: 'home' | 'teacher' | 'student-setup' | 'gallery' | 'auth' | 'admin' | 'share'
   projectName: string
-  uploadedImages: string[]
+  uploadedImages: GalleryImage[]
   currentTheme: ThemeType
   studentInfo: StudentInfo | null
   galleryBannerText: string
@@ -23,7 +28,9 @@ export interface AppState {
   setView: (view: AppState['view']) => void
   setJoystickState: (state: Partial<{ forward: boolean; backward: boolean; left: boolean; right: boolean; camPan: number; camTilt: number; resetLook: boolean }>) => void
   setProjectName: (name: string) => void
-  addUploadedImage: (imageUrl: string) => void
+  addUploadedImage: (image: string | GalleryImage) => void
+  updateImageTitle: (index: number, title: string) => void
+  removeImage: (index: number) => void
   setCurrentTheme: (theme: ThemeType) => void
   setStudentInfo: (info: StudentInfo | null) => void
   setBannerText: (text: string) => void
@@ -48,10 +55,23 @@ export const useStore = create<AppState>((set) => ({
   
   setView: (view) => set({ view }),
   setJoystickState: (state) => set((prev) => ({ joystickState: { ...prev.joystickState, ...state } })),
-  setProjectName: (name) => set({ projectName: name }),
-  addUploadedImage: (imageUrl) => set((state) => ({ 
-    uploadedImages: [...state.uploadedImages, imageUrl] 
-  })),
+  setProjectName: (name: string) => set({ projectName: name }),
+  addUploadedImage: (image) => set((state) => {
+    const newImage: GalleryImage = typeof image === 'string' ? { src: image, title: '' } : image;
+    return { uploadedImages: [...state.uploadedImages, newImage] };
+  }),
+  updateImageTitle: (index, title) => set((state) => {
+    const newImages = [...state.uploadedImages];
+    if (newImages[index]) {
+      newImages[index].title = title;
+    }
+    return { uploadedImages: newImages };
+  }),
+  removeImage: (index) => set((state) => {
+    const newImages = [...state.uploadedImages];
+    newImages.splice(index, 1);
+    return { uploadedImages: newImages };
+  }),
   setCurrentTheme: (theme) => set({ currentTheme: theme }),
   setStudentInfo: (info) => set({ studentInfo: info }),
   setBannerText: (text) => set({ galleryBannerText: text }),
