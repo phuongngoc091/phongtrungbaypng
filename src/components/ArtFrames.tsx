@@ -133,20 +133,33 @@ function Frame({ src, title, position, rotation, frameColor }: {
         <meshBasicMaterial map={texture} side={THREE.DoubleSide} />
       </mesh>
 
-      {/* Title Panel */}
+      {/* Title Panel as a 3D Frame */}
       {title && (
-        <Html 
-          transform 
-          center 
-          position={[0, -height / 2 - 0.7, 0.05]} 
-          zIndexRange={[10, 0]}
-        >
-          <div className="bg-slate-900/90 text-slate-100 px-4 py-2 rounded-xl border-2 shadow-2xl flex flex-col items-center justify-center max-w-[350px]" style={{ borderColor: frameColor }}>
-            <p className="text-xl font-bold whitespace-pre-wrap break-words text-center font-sans tracking-wide leading-snug">
-               {title}
-            </p>
-          </div>
-        </Html>
+        <group position={[0, -height / 2 - 0.7, 0.05]}>
+          {/* Outer Frame */}
+          <mesh castShadow receiveShadow position={[0, 0, 0]}>
+             <boxGeometry args={[4.5, 0.9, 0.1]} />
+             <meshStandardMaterial color={frameColor} roughness={0.2} metalness={0.8} />
+          </mesh>
+          {/* Inner Background */}
+          <mesh position={[0, 0, 0.06]}>
+             <planeGeometry args={[4.3, 0.7]} />
+             <meshStandardMaterial color="#0f172a" roughness={0.8} />
+          </mesh>
+          {/* Text */}
+          <Text
+            position={[0, 0, 0.07]}
+            color="white"
+            fontSize={Math.min(0.4, 6.0 / (title.length || 1))}
+            anchorX="center"
+            anchorY="middle"
+            whiteSpace="nowrap"
+            outlineWidth={0.01}
+            outlineColor="#000000"
+          >
+            {title}
+          </Text>
+        </group>
       )}
     </group>
   )

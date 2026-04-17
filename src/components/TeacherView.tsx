@@ -156,7 +156,7 @@ export const TeacherView = () => {
             const canvas = document.createElement('canvas');
             let width = img.width;
             let height = img.height;
-            const MAX_SIZE = 800; // Compress to max 800px
+            const MAX_SIZE = 400; // Compress strongly to max 400px to ensure 20 images fit within 1MB limit
 
             if (width > height) {
               if (width > MAX_SIZE) {
@@ -174,8 +174,8 @@ export const TeacherView = () => {
             const ctx = canvas.getContext('2d');
             ctx?.drawImage(img, 0, 0, width, height);
             
-            // Compress to webp at 0.5 quality
-            const compressedDataUrl = canvas.toDataURL('image/webp', 0.5);
+            // Compress to webp at 0.4-0.5 quality down from previous to avoid Firebase >1MB error
+            const compressedDataUrl = canvas.toDataURL('image/webp', 0.4);
             addUploadedImage(compressedDataUrl);
           };
           img.src = event.target.result as string;
