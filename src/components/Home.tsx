@@ -120,8 +120,8 @@ export const Home = () => {
               
               <div className="w-full flex-1 flex flex-col items-center justify-center z-10 mb-8 border border-slate-700 rounded-2xl bg-slate-900 overflow-hidden relative">
                  {/* Try to show banner or first image */}
-                 {demoProject.bannerImage || demoProject.images?.[0] ? (
-                   <img src={demoProject.bannerImage || demoProject.images[0]} alt="Demo" className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform duration-700" />
+                 {demoProject.bannerImage || demoProject.previewImage || (demoProject.images && demoProject.images[0]) ? (
+                   <img src={demoProject.bannerImage || demoProject.previewImage || demoProject.images[0]?.src || demoProject.images[0]} alt="Demo" className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform duration-700" />
                  ) : (
                    <div className="absolute inset-0 flex items-center justify-center bg-slate-800 group-hover:scale-105 transition-transform duration-700">
                      <span className="text-6xl">🎨</span>

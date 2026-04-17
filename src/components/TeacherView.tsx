@@ -7,7 +7,6 @@ import { ArrowLeft, Upload, Image as ImageIcon, CheckCircle, ShieldUser, LogOut,
 import Swal from 'sweetalert2'
 import { db, storage } from '../utils/firebase'
 import { collection, getDocs, query, where, setDoc, doc, deleteDoc, writeBatch } from 'firebase/firestore'
-import { ref, uploadString, getDownloadURL } from 'firebase/storage'
 import { ShareModal } from './ShareModal'
 
 const generateShortCode = () => {
@@ -95,6 +94,15 @@ export const TeacherView = () => {
       cancelButtonText: 'Huỷ'
     })
     if (result.isConfirmed) {
+      if (proj.imageCount !== undefined && (!proj.images || proj.images.length === 0)) {
+         // Fetch images from subcollection for newly saved projects
+         const q = query(collection(db, 'galleries', proj.id, 'images'));
+         const snap = await getDocs(q);
+         const subImgs: any[] = [];
+         snap.forEach(d => subImgs.push(d.data()));
+         subImgs.sort((a,b) => a.index - b.index);
+         proj.images = subImgs;
+      }
       loadProjectInfo(proj)
     }
   }
@@ -157,7 +165,7 @@ export const TeacherView = () => {
             const canvas = document.createElement('canvas');
             let width = img.width;
             let height = img.height;
-            const MAX_SIZE = 800; // Restore high quality: 800px
+            const MAX_SIZE = 600; // 600px is excellent quality and small enough for fast Firestore batches
 
             if (width > height) {
               if (width > MAX_SIZE) {
@@ -181,8 +189,8 @@ export const TeacherView = () => {
               ctx.drawImage(img, 0, 0, width, height);
             }
             
-            // High quality JPEG for memory preview (will be uploaded to Storage)
-            const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.8);
+            // Generate JPEG string (Subcollections skip the 1MB doc limit)
+            const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.7);
             addUploadedImage(compressedDataUrl);
           };
           img.src = event.target.result as string;
@@ -248,23 +256,35 @@ export const TeacherView = () => {
     if (bannerInputRef.current) bannerInputRef.current.value = '';
   }
 
-  const uploadImagesToStorage = async (shortCode: string) => {
-    let finalBanner = galleryBannerImage;
-    if (finalBanner && finalBanner.startsWith('data:image')) {
-      const bannerRef = ref(db.app.options.storageBucket ? storage : storage, `galleries/${shortCode}/banner_${Date.now()}.jpg`);
-      await uploadString(bannerRef, finalBanner, 'data_url');
-      finalBanner = await getDownloadURL(bannerRef);
+  const publishToFirestoreBatch = async (code: string) => {
+    const batch = writeBatch(db);
+    
+    // Create main document
+    const galleryData = {
+      ownerId: profile.uid,
+      isAdmin: profile.role === 'admin',
+      projectName: projectName,
+      theme: currentTheme,
+      bannerText: isVip ? galleryBannerText : 'phuongngoc091',
+      bannerImage: isVip ? galleryBannerImage : null,
+      previewImage: uploadedImages[0]?.src || null,
+      imageCount: uploadedImages.length,
+      createdAt: Date.now()
     }
     
-    const finalImages = [...uploadedImages];
-    for (let i = 0; i < finalImages.length; i++) {
-      if (finalImages[i].src.startsWith('data:image')) {
-        const imageRef = ref(db.app.options.storageBucket ? storage : storage, `galleries/${shortCode}/img_${i}_${Date.now()}.jpg`);
-        await uploadString(imageRef, finalImages[i].src, 'data_url');
-        finalImages[i].src = await getDownloadURL(imageRef);
-      }
+    batch.set(doc(db, 'galleries', code), galleryData);
+    
+    // Offload all images into separate documents inside a subcollection (limit per batch is 500 writes, we only do ~20)
+    for (let i = 0; i < uploadedImages.length; i++) {
+        const imgRef = doc(db, 'galleries', code, 'images', `img_${i}`);
+        batch.set(imgRef, {
+           src: uploadedImages[i].src,
+           title: uploadedImages[i].title || '',
+           index: i
+        });
     }
-    return { finalImages, finalBanner };
+    
+    await batch.commit();
   }
 
   const handleSaveDraft = async () => {
@@ -275,19 +295,8 @@ export const TeacherView = () => {
     setPublishing(true)
     try {
       const code = generateShortCode()
-      const { finalImages, finalBanner } = await uploadImagesToStorage(code)
+      await publishToFirestoreBatch(code)
       
-      const galleryData = {
-        ownerId: profile.uid,
-        isAdmin: profile.role === 'admin',
-        projectName: projectName,
-        theme: currentTheme,
-        bannerText: isVip ? galleryBannerText : 'phuongngoc091',
-        bannerImage: isVip ? finalBanner : null,
-        images: finalImages,
-        createdAt: Date.now()
-      }
-      await setDoc(doc(db, 'galleries', code), galleryData)
       Swal.fire({ title: 'Thành công', text: `Đã lưu Dự án "${projectName}" thành công!`, icon: 'success', toast: true, position: 'top-end', timer: 3000, showConfirmButton: false })
       fetchSavedProjects() // Refresh list
     } catch (err) {
@@ -308,20 +317,8 @@ export const TeacherView = () => {
     setPublishError(null)
     try {
       let code = generateShortCode()
-      const { finalImages, finalBanner } = await uploadImagesToStorage(code)
-
-      const galleryData = {
-        ownerId: profile.uid,
-        isAdmin: profile.role === 'admin',
-        projectName: projectName,
-        theme: currentTheme,
-        bannerText: isVip ? galleryBannerText : 'phuongngoc091',
-        bannerImage: isVip ? finalBanner : null,
-        images: finalImages,
-        createdAt: Date.now()
-      }
+      await publishToFirestoreBatch(code)
       
-      await setDoc(doc(db, 'galleries', code), galleryData)
       setShareCode(code)
       fetchSavedProjects() // Refresh list
     } catch (error: any) {

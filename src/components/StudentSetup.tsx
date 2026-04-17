@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useStore } from '../store/useStore'
 import { Home, User, Play, Hash } from 'lucide-react'
 import { db } from '../utils/firebase'
-import { doc, getDoc } from 'firebase/firestore'
+import { doc, getDoc, getDocs, collection, query } from 'firebase/firestore'
 
 const characters = [
   { id: 'boy', name: 'Học Sinh Nam', icon: '👦', bg: 'bg-blue-500/20 hover:bg-blue-500/30 border-blue-400 text-blue-100' },
@@ -60,8 +60,20 @@ export const StudentSetup = () => {
         setCurrentTheme(data.theme)
         setBannerText(data.bannerText || 'phuongngoc091')
         setBannerImage(data.bannerImage || null)
-        if (data.images) {
-          data.images.forEach((img: string) => addUploadedImage(img))
+        
+        // Fetch images array from subcollection if data is stored in the new chunked format
+        let projectImages = data.images || [];
+        if (!data.images && data.imageCount > 0) {
+           const imgsQuery = query(collection(db, 'galleries', galleryCode.trim(), 'images'));
+           const imgsSnap = await getDocs(imgsQuery);
+           const fetchedImgs: any[] = [];
+           imgsSnap.forEach(d => fetchedImgs.push(d.data()));
+           fetchedImgs.sort((a,b) => a.index - b.index);
+           projectImages = fetchedImgs;
+        }
+
+        if (projectImages) {
+          projectImages.forEach((img: any) => addUploadedImage(img))
         }
 
         setStudentInfo({ nickname, characterType: selectedChar })
