@@ -33,6 +33,7 @@ export const TeacherView = () => {
   
   const [publishing, setPublishing] = useState(false)
   const [publishError, setPublishError] = useState<string | null>(null)
+  const [publishProgress, setPublishProgress] = useState<number>(0)
   const [shareCode, setShareCode] = useState<string | null>(null)
   const [showSavedProjects, setShowSavedProjects] = useState(true)
   const [showThemeMenu, setShowThemeMenu] = useState(false)
@@ -256,9 +257,7 @@ export const TeacherView = () => {
     if (bannerInputRef.current) bannerInputRef.current.value = '';
   }
 
-  const publishToFirestoreBatch = async (code: string) => {
-    const batch = writeBatch(db);
-    
+  const publishToFirestoreSequential = async (code: string) => {
     // Create main document
     const galleryData = {
       ownerId: profile.uid,
@@ -272,19 +271,25 @@ export const TeacherView = () => {
       createdAt: Date.now()
     }
     
-    batch.set(doc(db, 'galleries', code), galleryData);
+    await setDoc(doc(db, 'galleries', code), galleryData);
     
-    // Offload all images into separate documents inside a subcollection (limit per batch is 500 writes, we only do ~20)
+    // Allocate 5% to main doc, 95% to images
+    let currentProgress = 5;
+    setPublishProgress(Math.floor(currentProgress));
+    
+    const stepSize = 95 / (uploadedImages.length || 1);
+    
+    // Upload sequentially to avoid choking the connection and provide true progress %
     for (let i = 0; i < uploadedImages.length; i++) {
         const imgRef = doc(db, 'galleries', code, 'images', `img_${i}`);
-        batch.set(imgRef, {
+        await setDoc(imgRef, {
            src: uploadedImages[i].src,
            title: uploadedImages[i].title || '',
            index: i
         });
+        currentProgress += stepSize;
+        setPublishProgress(Math.floor(currentProgress));
     }
-    
-    await batch.commit();
   }
 
   const handleSaveDraft = async () => {
@@ -293,9 +298,11 @@ export const TeacherView = () => {
       return
     }
     setPublishing(true)
+    setPublishProgress(0)
     try {
       const code = generateShortCode()
-      await publishToFirestoreBatch(code)
+      await publishToFirestoreSequential(code)
+      setPublishProgress(100)
       
       Swal.fire({ title: 'Thành công', text: `Đã lưu Dự án "${projectName}" thành công!`, icon: 'success', toast: true, position: 'top-end', timer: 3000, showConfirmButton: false })
       fetchSavedProjects() // Refresh list
@@ -314,10 +321,12 @@ export const TeacherView = () => {
     }
 
     setPublishing(true)
+    setPublishProgress(0)
     setPublishError(null)
     try {
       let code = generateShortCode()
-      await publishToFirestoreBatch(code)
+      await publishToFirestoreSequential(code)
+      setPublishProgress(100)
       
       setShareCode(code)
       fetchSavedProjects() // Refresh list
@@ -495,10 +504,17 @@ export const TeacherView = () => {
                   <div className="flex items-center gap-4">
                     <button 
                       onClick={handleSaveDraft}
-                      disabled={uploadedImages.length === 0}
-                      className="px-6 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg font-bold transition-all shadow-lg flex items-center gap-2 disabled:opacity-50 text-sm border border-slate-600"
+                      disabled={uploadedImages.length === 0 || publishing}
+                      className="px-6 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg font-bold transition-all shadow-lg flex items-center gap-2 disabled:opacity-50 text-sm border border-slate-600 relative overflow-hidden"
                     >
-                      <CheckCircle className="w-4 h-4"/> Lưu Dự Án
+                      {publishing ? (
+                        <>
+                          <div className="absolute inset-0 bg-green-500/20" style={{ width: `${publishProgress}%`, transition: 'width 0.3s' }}></div>
+                          <span className="relative z-10">{publishProgress}%</span>
+                        </>
+                      ) : (
+                        <><CheckCircle className="w-4 h-4"/> Lưu Dự Án</>
+                      )}
                     </button>
                     <span className={`px-4 py-2 border rounded-lg text-sm font-medium ${uploadedImages.length === maxImages ? 'border-orange-500 text-orange-400' : 'border-slate-600 text-slate-300 bg-slate-800'}`}>
                       {uploadedImages.length} / {maxImages} bức
@@ -608,9 +624,14 @@ export const TeacherView = () => {
                       <button 
                         onClick={handlePublish}
                         disabled={publishing || uploadedImages.length === 0}
-                        className="flex-1 py-4 bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-400 hover:to-purple-400 rounded-xl font-bold transition-all shadow-lg flex justify-center items-center gap-2 disabled:opacity-50"
+                        className="flex-1 py-4 bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-400 hover:to-purple-400 rounded-xl font-bold transition-all shadow-lg flex justify-center items-center gap-2 disabled:opacity-50 relative overflow-hidden"
                       >
-                        {publishing ? 'Đang Xử Lý...' : 'Xuất Bản / Lấy Link'}
+                        {publishing ? (
+                          <>
+                             <div className="absolute inset-0 bg-white/25" style={{ width: `${publishProgress}%`, transition: 'width 0.3s', zIndex: 0 }}></div>
+                             <span className="relative z-10 w-full text-center">Đang Xử Lý... {publishProgress > 0 ? `${publishProgress}%` : ''}</span>
+                          </>
+                        ) : 'Xuất Bản / Lấy Link'}
                       </button>
                       
                       <button 
@@ -630,7 +651,7 @@ export const TeacherView = () => {
           <div className="mt-auto pt-8 flex flex-col items-center justify-center gap-1 text-sm pb-4">
             <p className="text-slate-300 font-medium tracking-wide">Tác giả: Phạm Phương Ngọc & Võ Thị Lệ Thu</p>
             <p className="text-slate-500 tracking-wider uppercase text-xs">Trường Tiểu học Nguyễn Duy Trinh</p>
-            <p className="text-slate-600 font-mono text-[10px] mt-1">Phiên bản: 1.1 (Cập nhật mới)</p>
+            <p className="text-slate-600 font-mono text-[10px] mt-1">Phiên bản: 1.2 (Thanh Tiến Trình Upload)</p>
           </div>
         </div>
       </div>
