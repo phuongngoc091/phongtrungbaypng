@@ -7,6 +7,7 @@ import { ArrowLeft, Upload, Image as ImageIcon, CheckCircle, ShieldUser, LogOut,
 import Swal from 'sweetalert2'
 import { db } from '../utils/firebase'
 import { collection, getDocs, query, where, setDoc, doc, deleteDoc, writeBatch } from 'firebase/firestore'
+import { ref, uploadString, getDownloadURL } from 'firebase/storage'
 import { ShareModal } from './ShareModal'
 
 const generateShortCode = () => {
@@ -156,7 +157,7 @@ export const TeacherView = () => {
             const canvas = document.createElement('canvas');
             let width = img.width;
             let height = img.height;
-            const MAX_SIZE = 350; // Compress strongly to max 350px to ensure 20 images fit within 1MB limit
+            const MAX_SIZE = 800; // Restore high quality: 800px
 
             if (width > height) {
               if (width > MAX_SIZE) {
@@ -180,8 +181,8 @@ export const TeacherView = () => {
               ctx.drawImage(img, 0, 0, width, height);
             }
             
-            // Compress using JPEG instead of WebP for guaranteed massive size reduction across all browsers
-            const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.5);
+            // High quality JPEG for memory preview (will be uploaded to Storage)
+            const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.8);
             addUploadedImage(compressedDataUrl);
           };
           img.src = event.target.result as string;
@@ -247,6 +248,25 @@ export const TeacherView = () => {
     if (bannerInputRef.current) bannerInputRef.current.value = '';
   }
 
+  const uploadImagesToStorage = async (shortCode: string) => {
+    let finalBanner = galleryBannerImage;
+    if (finalBanner && finalBanner.startsWith('data:image')) {
+      const bannerRef = ref(db.app.options.storageBucket ? storage : storage, `galleries/${shortCode}/banner_${Date.now()}.jpg`);
+      await uploadString(bannerRef, finalBanner, 'data_url');
+      finalBanner = await getDownloadURL(bannerRef);
+    }
+    
+    const finalImages = [...uploadedImages];
+    for (let i = 0; i < finalImages.length; i++) {
+      if (finalImages[i].src.startsWith('data:image')) {
+        const imageRef = ref(db.app.options.storageBucket ? storage : storage, `galleries/${shortCode}/img_${i}_${Date.now()}.jpg`);
+        await uploadString(imageRef, finalImages[i].src, 'data_url');
+        finalImages[i].src = await getDownloadURL(imageRef);
+      }
+    }
+    return { finalImages, finalBanner };
+  }
+
   const handleSaveDraft = async () => {
     if (!projectName.trim()) {
       Swal.fire('Thông báo', "Vui lòng đặt Tên Dự Án để lưu lại nhé!", 'warning')
@@ -254,18 +274,17 @@ export const TeacherView = () => {
     }
     setPublishing(true)
     try {
-      // For saving draft without sharing, we still use the short code approach 
-      // so it can be restored exactly. If we wanted to track ID we could store current projectId in Zustand.
-      // For this prototype, we'll just save a new document if there's no share code active yet.
       const code = generateShortCode()
+      const { finalImages, finalBanner } = await uploadImagesToStorage(code)
+      
       const galleryData = {
         ownerId: profile.uid,
         isAdmin: profile.role === 'admin',
         projectName: projectName,
         theme: currentTheme,
         bannerText: isVip ? galleryBannerText : 'phuongngoc091',
-        bannerImage: isVip ? galleryBannerImage : null,
-        images: uploadedImages,
+        bannerImage: isVip ? finalBanner : null,
+        images: finalImages,
         createdAt: Date.now()
       }
       await setDoc(doc(db, 'galleries', code), galleryData)
@@ -273,7 +292,7 @@ export const TeacherView = () => {
       fetchSavedProjects() // Refresh list
     } catch (err) {
       console.error(err)
-      Swal.fire('Lỗi', 'Lỗi khi lưu dự án', 'error')
+      Swal.fire('Lỗi', 'Lỗi khi lưu dự án (xin kiểm tra kết nối mạng)', 'error')
     } finally {
       setPublishing(false)
     }
@@ -288,19 +307,19 @@ export const TeacherView = () => {
     setPublishing(true)
     setPublishError(null)
     try {
+      let code = generateShortCode()
+      const { finalImages, finalBanner } = await uploadImagesToStorage(code)
+
       const galleryData = {
         ownerId: profile.uid,
         isAdmin: profile.role === 'admin',
         projectName: projectName,
         theme: currentTheme,
         bannerText: isVip ? galleryBannerText : 'phuongngoc091',
-        bannerImage: isVip ? galleryBannerImage : null,
-        images: uploadedImages, // In production setup, upload these to Firebase Storage. Doing DataURL for prototype.
+        bannerImage: isVip ? finalBanner : null,
+        images: finalImages,
         createdAt: Date.now()
       }
-
-      // Generate a short 6-letter code
-      let code = generateShortCode()
       
       await setDoc(doc(db, 'galleries', code), galleryData)
       setShareCode(code)
