@@ -1,5 +1,5 @@
 import { useStore } from '../store/useStore'
-import { useTexture, Text, Html } from '@react-three/drei'
+import { useTexture, Text } from '@react-three/drei'
 import * as THREE from 'three'
 import { Suspense } from 'react'
 
