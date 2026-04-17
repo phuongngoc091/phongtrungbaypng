@@ -156,7 +156,7 @@ export const TeacherView = () => {
             const canvas = document.createElement('canvas');
             let width = img.width;
             let height = img.height;
-            const MAX_SIZE = 400; // Compress strongly to max 400px to ensure 20 images fit within 1MB limit
+            const MAX_SIZE = 350; // Compress strongly to max 350px to ensure 20 images fit within 1MB limit
 
             if (width > height) {
               if (width > MAX_SIZE) {
@@ -172,10 +172,16 @@ export const TeacherView = () => {
             canvas.width = width;
             canvas.height = height;
             const ctx = canvas.getContext('2d');
-            ctx?.drawImage(img, 0, 0, width, height);
             
-            // Compress to webp at 0.4-0.5 quality down from previous to avoid Firebase >1MB error
-            const compressedDataUrl = canvas.toDataURL('image/webp', 0.4);
+            if (ctx) {
+              // Fill with white background to prevent transparent PNGs from turning black
+              ctx.fillStyle = '#ffffff';
+              ctx.fillRect(0, 0, width, height);
+              ctx.drawImage(img, 0, 0, width, height);
+            }
+            
+            // Compress using JPEG instead of WebP for guaranteed massive size reduction across all browsers
+            const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.5);
             addUploadedImage(compressedDataUrl);
           };
           img.src = event.target.result as string;
@@ -230,7 +236,7 @@ export const TeacherView = () => {
             }
             
             ctx.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
-            const compressedDataUrl = canvas.toDataURL('image/webp', 0.8);
+            const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.6);
             setBannerImage(compressedDataUrl);
           }
         };
@@ -608,6 +614,7 @@ export const TeacherView = () => {
           <div className="mt-auto pt-8 flex flex-col items-center justify-center gap-1 text-sm pb-4">
             <p className="text-slate-300 font-medium tracking-wide">Tác giả: Phạm Phương Ngọc & Võ Thị Lệ Thu</p>
             <p className="text-slate-500 tracking-wider uppercase text-xs">Trường Tiểu học Nguyễn Duy Trinh</p>
+            <p className="text-slate-600 font-mono text-[10px] mt-1">Phiên bản: 1.1 (Cập nhật mới)</p>
           </div>
         </div>
       </div>
