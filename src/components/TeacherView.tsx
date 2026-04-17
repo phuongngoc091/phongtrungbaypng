@@ -54,7 +54,7 @@ export const TeacherView = () => {
   if (!profile) return null
 
   const isVip = profile.role === 'vip' || profile.role === 'admin'
-  const maxImages = isVip ? 20 : 3
+  const maxImages = isVip ? 25 : 3
 
   const fetchSavedProjects = async () => {
     try {

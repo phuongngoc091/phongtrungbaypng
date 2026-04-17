@@ -19,30 +19,34 @@ export const ArtFrames = () => {
 
   const positions: { pos: [number, number, number], rot: [number, number, number] }[] = []
   
-  // For 60x60 Room, Wall goes from -30 to 30.
   const zWall = -29.4 // North Wall
   const xWallLeft = -29.4 // West Wall
   const xWallRight = 29.4 // East Wall
+  const zWallSouth = 29.4 // South Wall
 
-  // Maximum width for a frame layout to fit nicely: 5 frames on a 60 unit wall (available ~50 units to avoid corners)
-  // Max width per frame ~= 8
-  
+  const totalImages = uploadedImages.length
+  // For 60x60 Room, available safe width is about 50 units
+  const imagesPerWall = Math.max(1, Math.ceil(totalImages / 4))
+  const spacing = 50 / imagesPerWall
+  const startOffset = - ((imagesPerWall - 1) * spacing) / 2
+
   uploadedImages.forEach((_, idx) => {
-    // We space 5 images per wall. Range: -20 to 20, step of 10.
-    const spacing = 10
+    const wallIndex = Math.floor(idx / imagesPerWall)
+    const posOnWall = idx % imagesPerWall
+    const offset = startOffset + posOnWall * spacing
     
-    if (idx < 5) {
+    if (wallIndex === 0) {
       // North Wall
-      const x = -20 + (idx * spacing)
-      positions.push({ pos: [x, 4, zWall], rot: [0, 0, 0] })
-    } else if (idx < 10) {
-      // East Wall
-      const z = -20 + ((idx - 5) * spacing)
-      positions.push({ pos: [xWallRight, 4, z], rot: [0, -Math.PI / 2, 0] })
+      positions.push({ pos: [offset, 4, zWall], rot: [0, 0, 0] })
+    } else if (wallIndex === 1) {
+      // East Wall (z is offset)
+      positions.push({ pos: [xWallRight, 4, offset], rot: [0, -Math.PI / 2, 0] })
+    } else if (wallIndex === 2) {
+      // South Wall (x is -offset to face correctly, wait: rotation is Math.PI)
+      positions.push({ pos: [-offset, 4, zWallSouth], rot: [0, Math.PI, 0] })
     } else {
-      // West Wall
-      const z = -20 + ((idx - 10) * spacing)
-      positions.push({ pos: [xWallLeft, 4, z], rot: [0, Math.PI / 2, 0] })
+      // West Wall (z is -offset to match progression)
+      positions.push({ pos: [xWallLeft, 4, -offset], rot: [0, Math.PI / 2, 0] })
     }
   })
 
@@ -82,6 +86,7 @@ export const ArtFrames = () => {
           position={positions[index].pos} 
           rotation={positions[index].rot}
           frameColor={frameColor} 
+          maxLayoutWidth={spacing * 0.8}
         />
       ))}
     </group>
@@ -98,24 +103,25 @@ function BannerImage({ src }: { src: string }) {
   )
 }
 
-function Frame({ src, title, position, rotation, frameColor }: { 
+function Frame({ src, title, position, rotation, frameColor, maxLayoutWidth = 8 }: { 
   src: string; 
   title?: string;
   position: [number, number, number]; 
   rotation: [number, number, number];
-  frameColor: string 
+  frameColor: string;
+  maxLayoutWidth?: number;
 }) {
   const texture = useTexture(src)
   
   const image = texture.image as { width?: number; height?: number } | undefined
   const imgAspect = (image?.width && image?.height) ? image.width / image.height : 1
   
-  // Base height, but if aspect ratio is too wide, constraint width instead to fit our 10 unit spacing.
+  // Base height, but if aspect ratio is too wide, constraint width instead to fit our spacing.
   let height = 3.5
   let width = height * imgAspect
   
-  if (width > 8) {
-    width = 8
+  if (width > maxLayoutWidth) {
+    width = maxLayoutWidth
     height = width / imgAspect
   }
 
